@@ -1,6 +1,14 @@
-﻿namespace ToDoManager.Application;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 
-public class DependencyInjection
+namespace ToDoManager.Application;
+
+public static class DependencyInjection
 {
-	
+	public static IServiceCollection AddApplication(
+		this IServiceCollection services
+		)
+	{
+		return services;
+	}
 }

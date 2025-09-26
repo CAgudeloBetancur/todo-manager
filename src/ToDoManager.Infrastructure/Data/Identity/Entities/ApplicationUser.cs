@@ -1,6 +1,8 @@
-﻿namespace ToDoManager.Infrastructure.Data.Identity.Entities;
+﻿using Microsoft.AspNetCore.Identity;
 
-public class ApplicationUser
+namespace ToDoManager.Infrastructure.Data.Identity.Entities;
+
+public class ApplicationUser : IdentityUser<Guid>
 {
-	
+	public DateTime CreatedAt { get; set; } = DateTime.Now;
 }
