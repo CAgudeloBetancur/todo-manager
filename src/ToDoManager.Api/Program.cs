@@ -1,25 +1,38 @@
-var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+public class TodoManagerApi
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+	private readonly WebApplication _app;
+	
+	public TodoManagerApi(
+		string[] args, 
+		Action<IServiceCollection, IConfiguration> options
+		)
+	{
+		var builder = WebApplication.CreateBuilder(args);
+		
+		options.Invoke(builder.Services, builder.Configuration);
+
+		_app = builder.Build();
+
+		// Configure the HTTP request pipeline.
+		
+		if (_app.Environment.IsDevelopment())
+		{
+			_app.UseSwagger();
+			_app.UseSwaggerUI();
+		}
+
+		_app.UseHttpsRedirection();
+
+		_app.UseAuthorization();
+
+		_app.MapControllers();
+	}
+
+	public Task StartAsync()
+	{
+		return _app.RunAsync();
+	}
+    
 }
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();

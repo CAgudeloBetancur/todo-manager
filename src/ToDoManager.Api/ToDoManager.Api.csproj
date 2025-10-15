@@ -4,6 +4,8 @@
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <OutputType>Library</OutputType>
+    <UserSecretsId>13667fcc-d940-4426-8c0e-2895ef6381c9</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +15,10 @@
   <ItemGroup>
     <ProjectReference Include="..\ToDoManager.Application\ToDoManager.Application.csproj" />
     <ProjectReference Include="..\ToDoManager.Domain\ToDoManager.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Properties\launchSettings.json" />
   </ItemGroup>
 
 </Project>
