@@ -1,7 +1,6 @@
-# @Api_HostAddress = http://localhost:5233
-@Api_HostAddress = http://localhost:5000
+@ToDoManager.Api_HostAddress = http://localhost:5233
 
-GET {{Api_HostAddress}}/weatherforecast/
+GET {{ToDoManager.Api_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
