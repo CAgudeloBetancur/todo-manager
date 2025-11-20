@@ -55,6 +55,20 @@ public sealed class Todo : AggregateRoot<TodoId>
 	{
 		return new(TodoId.CreateUnique(), title, description, status, priority, dueDate, ownerId, auditInfo);
 	}
+	
+	public static Todo Create(
+		TodoId id,
+		string title,
+		string description,
+		TodoStatus status,
+		TodoPriority priority,
+		DueDate dueDate,
+		UserId ownerId,
+		AuditInfo auditInfo
+	)
+	{
+		return new(id, title, description, status, priority, dueDate, ownerId, auditInfo);
+	}
 
 #pragma warning disable CS8618
 	public Todo() {	}

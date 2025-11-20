@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using ToDoManager.Domain.Todos;
 using ToDoManager.Domain.Todos.Entities;
@@ -121,13 +122,19 @@ public class TodoConfigurations : IEntityTypeConfiguration<Todo>
 		
 		builder
 			.Property(t => t.DueDate)
-			.HasConversion(dueDate => dueDate.Value, value => DueDate.Create(value));;
+			.HasConversion(
+				dueDate => DateTime.SpecifyKind(dueDate.Value, DateTimeKind.Utc), 
+				value => DueDate.Create(DateTime.SpecifyKind(value, DateTimeKind.Utc)));
 		
 		builder
 			.Property(t => t.OwnerId)
 			.HasConversion(userId => userId.Value, value => UserId.Create(value));
-		
+
 		builder
-			.OwnsOne(t => t.AuditInfo);
+			.OwnsOne(t => t.AuditInfo, auditInfo =>
+			{
+				auditInfo
+					.WithOwner();
+			});
 	}
 }

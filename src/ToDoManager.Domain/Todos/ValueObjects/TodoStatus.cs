@@ -28,10 +28,12 @@ public sealed class TodoStatus : ValueObject
 
 	public static TodoStatus From(string value)
 	{
-		var status = All.FirstOrDefault(x => x.Value == value);
-
-		return status ?? throw new ArgumentException($"Invalid status {value}" );
+		return IsValidStatus(value)
+			? All.First(x => x.Value == value)
+			: throw new ArgumentException($"Invalid status {value}");
 	}
+	
+	public static bool IsValidStatus(string? status) => All.Any(x => x.Value == status);
 
 	public override string ToString() => Value;
 	
