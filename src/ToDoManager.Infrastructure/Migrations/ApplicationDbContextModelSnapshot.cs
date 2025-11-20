@@ -17,7 +17,7 @@ namespace ToDoManager.Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.2")
+                .HasAnnotation("ProductVersion", "8.0.21")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -200,34 +200,9 @@ namespace ToDoManager.Infrastructure.Migrations
                     b.ToTable("Todos", (string)null);
                 });
 
-            modelBuilder.Entity("ToDoManager.Domain.Users.User", b =>
+            modelBuilder.Entity("ToDoManager.Infrastructure.Authentication.Identity.Entities.ApplicationUser", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid>("IdentityUserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdentityUserId");
-
-                    b.ToTable("Users", (string)null);
-                });
-
-            modelBuilder.Entity("ToDoManager.Infrastructure.Data.Identity.Entities.ApplicationUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
                     b.Property<int>("AccessFailedCount")
@@ -248,6 +223,14 @@ namespace ToDoManager.Infrastructure.Migrations
 
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
@@ -305,7 +288,7 @@ namespace ToDoManager.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("ToDoManager.Infrastructure.Data.Identity.Entities.ApplicationUser", null)
+                    b.HasOne("ToDoManager.Infrastructure.Authentication.Identity.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -314,7 +297,7 @@ namespace ToDoManager.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("ToDoManager.Infrastructure.Data.Identity.Entities.ApplicationUser", null)
+                    b.HasOne("ToDoManager.Infrastructure.Authentication.Identity.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -329,7 +312,7 @@ namespace ToDoManager.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ToDoManager.Infrastructure.Data.Identity.Entities.ApplicationUser", null)
+                    b.HasOne("ToDoManager.Infrastructure.Authentication.Identity.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -338,7 +321,7 @@ namespace ToDoManager.Infrastructure.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("ToDoManager.Infrastructure.Data.Identity.Entities.ApplicationUser", null)
+                    b.HasOne("ToDoManager.Infrastructure.Authentication.Identity.Entities.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -440,15 +423,6 @@ namespace ToDoManager.Infrastructure.Migrations
                     b.Navigation("SubTodos");
 
                     b.Navigation("TagIds");
-                });
-
-            modelBuilder.Entity("ToDoManager.Domain.Users.User", b =>
-                {
-                    b.HasOne("ToDoManager.Infrastructure.Data.Identity.Entities.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("IdentityUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

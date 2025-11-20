@@ -14,22 +14,32 @@ public sealed class AuditInfo : ValueObject
 		CreatedBy = createdBy;
 		CreatedAt = createdAt;
 	}
+	
+	private AuditInfo(Guid createdBy, DateTime createdAt, Guid updatedBy, DateTime? modifiedAt)
+	{
+		CreatedBy = createdBy;
+		CreatedAt = createdAt;
+		ModifiedBy = updatedBy;
+		ModifiedAt = modifiedAt;
+	}
 
 	public static AuditInfo Create(Guid createdBy, DateTime createdAt)
 	{
 		return new(createdBy, createdAt);
 	}
 
-	public void Modify(Guid modifiedBy, DateTime modifiedAt)
-	{
-		ModifiedBy = modifiedBy;
-		ModifiedAt = modifiedAt;
-	}
+	public void Update(Guid modifiedBy, DateTime modifiedAt)
+    {
+     	ModifiedAt = modifiedAt;
+     	ModifiedBy = modifiedBy;
+    }
 	
 	protected override IEnumerable<object> GetEqualityComponents()
 	{
 		yield return CreatedBy;
 		yield return CreatedAt;
+		yield return ModifiedBy;
+		yield return ModifiedAt;
 	}
 
 #pragma warning disable CS8618

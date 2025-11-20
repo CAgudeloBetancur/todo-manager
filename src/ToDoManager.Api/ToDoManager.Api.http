@@ -1,7 +1,8 @@
-# @Api_HostAddress = http://localhost:5233
-@Api_HostAddress = http://localhost:5000
+ @Api_HostAddress = http://localhost:5233
+#@Api_HostAddress = http://localhost:5000k
 
-GET {{Api_HostAddress}}/weatherforecast/
+GET {{Api_HostAddress}}/api/Tags/List
 Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJUb0RvTWFuYWdlci5Eb21haW4uVXNlcnMuVmFsdWVPYmplY3RzLlVzZXJJZCIsImdpdmVuX25hbWUiOiJDYW1pbG8iLCJmYW1pbHlfbmFtZSI6IkFndWRlbG8iLCJqdGkiOiJiY2FlZDcyMC1mZDU5LTQxNDYtODgyNy1lMzk5ZDJmMTFkMjEiLCJleHAiOjE3NjIyMzA1NjIsImlzcyI6IlRvRG9NYW5hZ2VyIiwiYXVkIjoiVG9Eb01hbmFnZXIifQ.LAFFFhi1PrEUsQV5RTjU8ZUMP8j73b8H3am8VwTOpL0
 
 ###

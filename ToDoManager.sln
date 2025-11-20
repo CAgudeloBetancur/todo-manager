@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoManager.Api.Tests", "te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoManager.Application.Tests", "tests\ToDoManager.Application.Tests\ToDoManager.Application.Tests.csproj", "{4320B805-82CC-456F-A673-F7C59074C268}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToDoManager.Contracts", "src\ToDoManager.Contracts\ToDoManager.Contracts.csproj", "{8440ECFA-127F-4067-9FB2-3CDD97F13A98}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{4320B805-82CC-456F-A673-F7C59074C268}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4320B805-82CC-456F-A673-F7C59074C268}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4320B805-82CC-456F-A673-F7C59074C268}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8440ECFA-127F-4067-9FB2-3CDD97F13A98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8440ECFA-127F-4067-9FB2-3CDD97F13A98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8440ECFA-127F-4067-9FB2-3CDD97F13A98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8440ECFA-127F-4067-9FB2-3CDD97F13A98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B940A548-5027-4732-A0BA-D3786BE682AD} = {FA07B928-B616-4956-B3D6-25F80F0E4C22}
@@ -67,5 +73,6 @@ Global
 		{DC5F5EBD-E960-4F01-96E9-E938E3479B01} = {FA07B928-B616-4956-B3D6-25F80F0E4C22}
 		{05FD3E74-A5F9-40BD-AF94-C6A1645024D3} = {47C68DF6-AF67-432E-8639-5452B16C0EA9}
 		{4320B805-82CC-456F-A673-F7C59074C268} = {47C68DF6-AF67-432E-8639-5452B16C0EA9}
+		{8440ECFA-127F-4067-9FB2-3CDD97F13A98} = {FA07B928-B616-4956-B3D6-25F80F0E4C22}
 	EndGlobalSection
 EndGlobal

@@ -9,11 +9,18 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.21" />
+    <PackageReference Include="Npgsql" Version="8.0.6" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.3" />
+    <PackageReference Include="Serilog.Enrichers.Context" Version="4.6.5" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
+    <PackageReference Include="Serilog.Sinks.OpenTelemetry" Version="4.2.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ToDoManager.Application\ToDoManager.Application.csproj" />
+    <ProjectReference Include="..\ToDoManager.Contracts\ToDoManager.Contracts.csproj" />
     <ProjectReference Include="..\ToDoManager.Domain\ToDoManager.Domain.csproj" />
   </ItemGroup>
 

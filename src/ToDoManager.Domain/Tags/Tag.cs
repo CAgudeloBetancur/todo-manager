@@ -13,8 +13,12 @@ public sealed class Tag : AggregateRoot<TagId>
 		Name = name;
 	}
 
-	public static Tag Create(string name, TodoId todoId){
+	public static Tag Create(string name){
 		return new(TagId.CreateUnique(), name);
+	}
+	
+	public static Tag Create(Guid id, string name){
+		return new(TagId.Create(id), name);
 	}
 	
 #pragma warning restore CS8618

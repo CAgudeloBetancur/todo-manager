@@ -2,9 +2,11 @@
 
 namespace ToDoManager.Domain.Todos.ValueObjects;
 
-public class TodoPriority : ValueObject
+public sealed class TodoPriority : ValueObject
 {
 	public int Value { get; private set; }
+
+	public static readonly TodoPriority Medium = new(50);
 
 	public string Label => Value switch
 	{
@@ -17,14 +19,13 @@ public class TodoPriority : ValueObject
 
 	private TodoPriority(int value)
 	{
-		if(value is < 1 or > 100) 
+		if( !IsValidPriority(value) ) 
 			throw new ArgumentOutOfRangeException(
 				nameof(value), 
 				"Value must be between 1 and 100."
 				);
 		
 		Value = value;
-		
 	}
 	
 	protected override IEnumerable<object> GetEqualityComponents()
@@ -39,6 +40,8 @@ public class TodoPriority : ValueObject
 	}
 
 	public bool IsHigherThan(TodoPriority other) => Value > other.Value;
+
+	public static bool IsValidPriority(int value) => value is >= 1 and <= 100;
 
 	public override string ToString() => Label;
 	

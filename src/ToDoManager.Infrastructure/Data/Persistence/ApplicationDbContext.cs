@@ -1,14 +1,17 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ToDoManager.Domain.Tags;
 using ToDoManager.Domain.Todos;
-using ToDoManager.Infrastructure.Data.Identity.Entities;
+using ToDoManager.Domain.Users;
+using ToDoManager.Infrastructure.Authentication.Identity.Entities;
 
 namespace ToDoManager.Infrastructure.Data.Persistence;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
 {
 	public DbSet<Todo> Todos { get; set; }
+	public DbSet<Tag> Tags { get; set; }
 	
 	public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)	{ }
 
@@ -18,4 +21,5 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
 		
 		builder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 	}
+	
 }
