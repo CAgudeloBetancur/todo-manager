@@ -14,7 +14,7 @@ public sealed class SubTodo : Entity<SubTodoId>
 		SubTodoId id, 
 		string title, 
 		string description, 
-		bool isComplete, 
+		bool isComplete,
 		int order
 		) : base(id)
 	{
@@ -27,6 +27,18 @@ public sealed class SubTodo : Entity<SubTodoId>
 	public static SubTodo Create(string title, string description, bool isComplete, int order)
 	{
 		return new SubTodo(SubTodoId.CreateUnique(), title, description, isComplete, order);
+	}
+
+	internal void Update(string title, string description, bool isComplete)
+	{
+		Title = title;
+		Description = description;
+		IsComplete = isComplete;
+	}
+
+	internal void UpdateOrder(int order)
+	{
+		Order = order;
 	}
 	
 #pragma warning disable CS8618

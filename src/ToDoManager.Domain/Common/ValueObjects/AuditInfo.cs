@@ -33,6 +33,16 @@ public sealed class AuditInfo : ValueObject
      	ModifiedAt = modifiedAt;
      	ModifiedBy = modifiedBy;
     }
+
+	public void UpdateModifiedAt(DateTime modifiedAt)
+	{
+		ModifiedAt = modifiedAt;
+	}
+
+	public void UpdateModifiedBy(Guid modifiedBy)
+	{
+		ModifiedBy = modifiedBy;
+	}
 	
 	protected override IEnumerable<object> GetEqualityComponents()
 	{

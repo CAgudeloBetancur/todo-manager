@@ -9,5 +9,13 @@ public record class GetTodoByIdResult(
 	string PriorityName,
 	DateTime DueDate,
 	Guid OwnerId,
-	DateTime CreatedAt
+	DateTime CreatedAt,
+	List<SubTodoResponse> SubTodos
+	);
+	
+public record SubTodoResponse(
+	string Title,
+	string Description,
+	bool IsCompleted,
+	int Order
 	);

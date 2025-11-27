@@ -42,7 +42,12 @@ public class GetTodoByIdQueryHandler : IRequestHandler<GetTodoByIdQuery, ErrorOr
 			todo.Priority.Label,
 			todo.DueDate.Value,
 			todo.OwnerId.Value,
-			todo.AuditInfo.CreatedAt
+			todo.AuditInfo.CreatedAt,
+			todo
+				.SubTodos
+				.OrderBy(st => st.Order)
+				.Select(st => new SubTodoResponse(st.Title, st.Description, st.IsComplete, st.Order))
+				.ToList()
 		);
 	}
 }
