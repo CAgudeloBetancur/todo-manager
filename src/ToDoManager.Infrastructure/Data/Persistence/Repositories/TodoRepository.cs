@@ -24,6 +24,7 @@ public class TodoRepository : ITodoRepository
 	{
 		return await _context
 			.Todos
+			.Include(x => x.SubTodos)
 			.SingleOrDefaultAsync(
 				t => t.Id == id && t.OwnerId == ownerId
 				);
@@ -42,8 +43,8 @@ public class TodoRepository : ITodoRepository
 		_context.Todos.Remove(todo);
 	}
 
-	public async Task Update(Todo currentTodo, Todo updatedTodo)
+	public async Task Update(Todo todo)
 	{
-		_context.Entry(currentTodo).CurrentValues.SetValues(updatedTodo);
+		_context.Todos.Update(todo);
 	}
 }

@@ -36,36 +36,29 @@ public class UpdateTodoCommandHandler : IRequestHandler<UpdateTodoCommand, Error
 		
 		var ownerId = UserId.Create((Guid)userId);
 		
-		var currentTodo = await _todoRepository.GetByIdForUserAsync(
+		var todo = await _todoRepository.GetByIdForUserAsync(
 			TodoId.Create(request.TodoId),
 			ownerId
 			);
 
-		if (currentTodo is null) return Errors.ToDo.NotFound;
-
-		var updatedTodo = Todo.Create(
-			currentTodo.Id,
-			request.Title,
-			request.Description,
-			TodoStatus.From(request.Status),
-			TodoPriority.Create(request.Priority),
-			DueDate.Create(request.DueDate),
-			ownerId,
-			currentTodo.AuditInfo
-		);
-
+		if (todo is null) return Errors.ToDo.NotFound;
+		
 		var hasChanges =
-			currentTodo.Title != updatedTodo.Title ||
-			currentTodo.Description != updatedTodo.Description ||
-			currentTodo.Status != updatedTodo.Status ||
-			currentTodo.Priority != updatedTodo.Priority ||
-			currentTodo.DueDate != updatedTodo.DueDate;
+			todo.Title != request.Title ||
+			todo.Description != request.Description ||
+			todo.Status.Value != request.Status ||
+			todo.Priority.Value != request.Priority ||
+			todo.DueDate.Value != request.DueDate;
 
 		if (hasChanges)
 		{
-			updatedTodo.AuditInfo.Update(ownerId.Value, DateTime.UtcNow);
+			todo.UpdateTitle(request.Title);
+			todo.UpdateDescription(request.Description);
+			todo.UpdateStatus(TodoStatus.From(request.Status));
+			todo.UpdatePriority(TodoPriority.Create(request.Priority));
+			todo.UpdateDueDate(DueDate.Create(request.DueDate));
 
-			await _todoRepository.Update(currentTodo, updatedTodo);
+			await _todoRepository.Update(todo);
 			
 			var errors = await _unitOfWork.SaveChangesAsync(cancellationToken);
 			

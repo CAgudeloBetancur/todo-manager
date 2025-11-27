@@ -10,5 +10,5 @@ public interface ITodoRepository
 	Task<Todo?> GetByIdForUserAsync(TodoId todoId,UserId ownerId);
 	Task<List<Todo>> ListByUserAsync(UserId userId);
 	Task Remove(Todo todo);
-	Task Update(Todo currentTodo, Todo updatedTodo);
+	Task Update(Todo todo);
 }
