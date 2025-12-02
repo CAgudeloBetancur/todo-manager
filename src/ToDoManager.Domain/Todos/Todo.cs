@@ -14,7 +14,9 @@ public sealed class Todo : AggregateRoot<TodoId>
 	public TodoStatus Status { get; private set; }
 	public TodoPriority Priority { get; private set; }
 	public DueDate DueDate { get; private set; }
-	public UserId OwnerId { get; private set; }
+	private readonly Guid _ownerIdGuid;
+	// public UserId OwnerId { get; private set; }
+	public UserId OwnerId => UserId.Create(_ownerIdGuid);
 	public AuditInfo AuditInfo { get; private set; } 
 	
 	private readonly List<SubTodo> _subTodos = new();
@@ -39,8 +41,8 @@ public sealed class Todo : AggregateRoot<TodoId>
 		Status = status;
 		Priority = priority;
 		DueDate = dueDate;
-		OwnerId = ownerId;
 		AuditInfo = auditInfo;
+		_ownerIdGuid = ownerId.Value;
 	}
 
 	public static Todo Create(
@@ -165,6 +167,25 @@ public sealed class Todo : AggregateRoot<TodoId>
 		}
 		
 		AuditInfo.UpdateModifiedAt(DateTime.UtcNow);
+	}
+	
+	public void AddTagId(TagId tagId)
+	{
+		if(TagIds.Contains(tagId)) throw new Exception("Tag already exists.");
+		
+		_tagIds.Add(tagId);
+	}
+	
+	public void RemoveTagId(TagId tagId)
+	{
+		if(!TagIds.Contains(tagId)) throw new Exception("Tag not found.");
+		
+		_tagIds.Remove(tagId);
+	}
+
+	public void ClearTagIds()
+	{
+		_tagIds.Clear();
 	}
 
 #pragma warning disable CS8618

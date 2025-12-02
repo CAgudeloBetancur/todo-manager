@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ToDoManager.Domain.Users.ValueObjects;
 using ToDoManager.Infrastructure.Authentication.Identity.Entities;
 
 namespace ToDoManager.Infrastructure.Authentication.Identity.Configurations;
@@ -15,7 +16,8 @@ public class ApplicationUserConfiguration : IEntityTypeConfiguration<Application
 			.Property(u => u.Id)
 			.ValueGeneratedNever();
 		
-		builder.Property(u => u.CreatedAt)
+		builder
+			.Property(u => u.CreatedAt)
 			.HasDefaultValueSql("NOW()");
 		
 		builder

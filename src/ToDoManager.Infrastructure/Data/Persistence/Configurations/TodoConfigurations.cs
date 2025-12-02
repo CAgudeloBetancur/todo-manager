@@ -5,6 +5,7 @@ using ToDoManager.Domain.Todos;
 using ToDoManager.Domain.Todos.Entities;
 using ToDoManager.Domain.Todos.ValueObjects;
 using ToDoManager.Domain.Users.ValueObjects;
+using ToDoManager.Infrastructure.Authentication.Identity.Entities;
 
 namespace ToDoManager.Infrastructure.Data.Persistence.Configurations;
 
@@ -125,10 +126,18 @@ public class TodoConfigurations : IEntityTypeConfiguration<Todo>
 			.HasConversion(
 				dueDate => DateTime.SpecifyKind(dueDate.Value, DateTimeKind.Utc), 
 				value => DueDate.Create(DateTime.SpecifyKind(value, DateTimeKind.Utc)));
+
+		builder
+			.Property<Guid>("_ownerIdGuid")
+			.HasColumnName("OwnerId")
+			.IsRequired();
 		
 		builder
-			.Property(t => t.OwnerId)
-			.HasConversion(userId => userId.Value, value => UserId.Create(value));
+			.HasOne<ApplicationUser>()
+			.WithMany(t => t.Todos)
+			.HasForeignKey("_ownerIdGuid")
+			.HasPrincipalKey(au => au.Id)
+			.OnDelete(DeleteBehavior.Cascade);
 
 		builder
 			.OwnsOne(t => t.AuditInfo, auditInfo =>

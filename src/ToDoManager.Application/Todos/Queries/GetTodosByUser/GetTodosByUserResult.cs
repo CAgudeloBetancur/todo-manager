@@ -9,5 +9,13 @@ public record class GetTodosByUserResult(
 	int PriorityValue,
 	DateTime DueDate,
 	Guid UserId,
-	DateTime CreatedAt
+	DateTime CreatedAt,
+	List<SubTodoResponse> SubTodos,
+	List<Guid> TagIds
+	);
+	
+public record class SubTodoResponse(
+	Guid Id,
+	string Title,
+	string Description
 	);
