@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using ToDoManager.Domain.Tags;
 using ToDoManager.Domain.Todos;
 using ToDoManager.Domain.Users;
+using ToDoManager.Domain.Users.ValueObjects;
 using ToDoManager.Infrastructure.Authentication.Identity.Entities;
 
 namespace ToDoManager.Infrastructure.Data.Persistence;

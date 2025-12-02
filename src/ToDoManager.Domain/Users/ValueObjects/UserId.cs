@@ -5,7 +5,7 @@ namespace ToDoManager.Domain.Users.ValueObjects;
 
 public sealed class UserId : ValueObject
 {
-	public Guid Value { get; private set; }
+	public Guid Value { get; }
 
 	private UserId(Guid value)
 	{

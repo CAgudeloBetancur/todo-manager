@@ -26,7 +26,7 @@ public class TodoRepository : ITodoRepository
 			.Todos
 			.Include(x => x.SubTodos)
 			.SingleOrDefaultAsync(
-				t => t.Id == id && t.OwnerId == ownerId
+				t => t.Id == id && EF.Property<Guid>(t, "_ownerIdGuid") == ownerId.Value
 				);
 	}
 
@@ -34,7 +34,9 @@ public class TodoRepository : ITodoRepository
 	{
 		return await _context
 			.Todos
-			.Where(t => t.OwnerId == userId)
+			.Include(t => t.SubTodos)
+			.Include(t => t.TagIds)
+			.Where(t => EF.Property<Guid>(t, "_ownerIdGuid") == userId.Value)
 			.ToListAsync();
 	}
 

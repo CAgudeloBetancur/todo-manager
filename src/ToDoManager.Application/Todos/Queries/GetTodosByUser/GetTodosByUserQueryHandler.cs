@@ -42,7 +42,9 @@ public class GetTodosByUserQueryHandler : IRequestHandler<GetTodosByUserQuery, E
 					todo.Priority.Value,
 					todo.DueDate.Value,
 					todo.OwnerId.Value,
-					todo.AuditInfo.CreatedAt
+					todo.AuditInfo.CreatedAt,
+					todo.SubTodos.Select(st => new SubTodoResponse(st.Id.Value, st.Title, st.Description)).ToList(),
+					todo.TagIds.Select(t => t.Value).ToList()
 				)
 			)
 			.ToList();
