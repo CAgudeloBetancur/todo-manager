@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Asp.Versioning;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToDoManager.Application.Authentication.Commands.Register;
@@ -8,7 +9,9 @@ using ToDoManager.Contracts.Authentication;
 namespace ToDoManager.Api.Controllers;
 
 [AllowAnonymous]
-[Route("api/[controller]/[action]")]
+[ApiVersion("1.0")]
+[ApiVersion("2.0")]
+[Route("api/v{apiVersion:apiVersion}/[controller]/[action]")]
 public class AuthenticationController : ApiController
 {
 	private readonly ISender _sender;

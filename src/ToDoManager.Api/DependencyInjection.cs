@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.OpenApi.Models;
 using ToDoManager.Api.Common.Errors;
 using ToDoManager.Api.Common.Http;
+using ToDoManager.Api.OpenApi;
 
 namespace ToDoManager.Api;
 
@@ -39,10 +40,11 @@ public static class DependencyInjection
 		
 		services.AddEndpointsApiExplorer();
 		
+		services
+			.ConfigureOptions<ConfigureSwaggerGenOptions>();
+		
 		services.AddSwaggerGen(c =>
 		{
-			c.SwaggerDoc("v1", new OpenApiInfo {Title = "Todo Manager", Version = "v1"});
-
 			var jwtSecurityScheme = new OpenApiSecurityScheme
 			{
 				Scheme = "bearer",
@@ -65,6 +67,7 @@ public static class DependencyInjection
 				{ jwtSecurityScheme, Array.Empty<string>() }
 			});
 		});
+
 
 		return services;
 	}

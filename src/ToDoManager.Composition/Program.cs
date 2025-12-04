@@ -1,7 +1,8 @@
-﻿// See https://aka.ms/new-console-template for more information
-
+﻿
+using Asp.Versioning;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Retry;
 using Serilog;
@@ -61,6 +62,20 @@ var api = new TodoManagerApi(args, (services, configuration) =>
 		});
 	
 	services
+		.AddApiVersioning(options =>
+		{
+			options.DefaultApiVersion = new ApiVersion(1, 0);
+			options.ReportApiVersions = true;
+			options.ApiVersionReader = new UrlSegmentApiVersionReader();
+		})
+		.AddMvc()
+		.AddApiExplorer(options =>
+		{
+			options.GroupNameFormat = "'v'VVV";
+			options.SubstituteApiVersionInUrl = true;
+		});
+	
+	services
 		.AddPresentation()
 		.AddApplication()
 		.AddHttpContextAccessor()
@@ -73,6 +88,7 @@ var api = new TodoManagerApi(args, (services, configuration) =>
 		.AddRoles<IdentityRole<Guid>>()
 		.AddEntityFrameworkStores<ApplicationDbContext>()
 		.AddDefaultTokenProviders();
+
 });
 
 try
