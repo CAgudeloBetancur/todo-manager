@@ -28,13 +28,25 @@ public class UserRepository : IUserRepository
 			: User.Create(identityUser.Id, identityUser.Email, identityUser.Email, identityUser.FirstName, identityUser.LastName);
 	}
 
-	public async Task<User?> FindByIdAsync(string userId)
+	public async Task<User?> FindByIdWithTodosAsync(Guid userId)
 	{
-		var identityUser = await _userManager.FindByIdAsync(userId);
+		var identityUser = await _context
+			.Users
+			.Include(u => u.Todos)
+			.ThenInclude(t => t.SubTodos)
+			.FirstOrDefaultAsync(u => u.Id == userId);
 		
 		return identityUser is null
 			? null
-			: User.Create(identityUser.Id, identityUser.Email, identityUser.Email, identityUser.FirstName, identityUser.LastName);
+			: User
+				.Create(
+					identityUser.Id, 
+					identityUser.Email, 
+					identityUser.Email, 
+					identityUser.FirstName, 
+					identityUser.LastName, 
+					identityUser.Todos.ToList()
+					);
 	}
 
 	public async Task<AuthenticationOperationResult> AddAsync(User user, string password)

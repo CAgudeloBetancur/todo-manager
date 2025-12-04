@@ -1,6 +1,6 @@
-﻿namespace ToDoManager.Application.Todos.Queries.GetTodosByUser;
+﻿namespace ToDoManager.Application.Users.Queries.GetTodosForUser;
 
-public record class GetTodosByUserResult(
+public record class GetTodosForUserResult(
 	Guid Id,
 	string Title,
 	string Description,
