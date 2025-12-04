@@ -1,4 +1,5 @@
 
+using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
@@ -54,7 +55,18 @@ public class TodoManagerApi
 		if (_app.Environment.IsDevelopment())
 		{
 			_app.UseSwagger();
-			_app.UseSwaggerUI();
+			_app.UseSwaggerUI(swaggerOptions =>
+			{
+				IReadOnlyList<ApiVersionDescription> descriptions = _app.DescribeApiVersions();
+
+				foreach (var apiVersionDescription in descriptions)
+				{
+					var url = $"/swagger/{apiVersionDescription.GroupName}/swagger.json";
+					var name = apiVersionDescription.GroupName.ToUpperInvariant();
+					
+					swaggerOptions.SwaggerEndpoint(url, name);
+				}
+			});
 		}
 		
 		_app.UseHttpsRedirection();

@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Asp.Versioning;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToDoManager.Application.Tags.Commands.CreateTag;
@@ -12,7 +13,9 @@ using ToDoManager.Contracts.Tags;
 namespace ToDoManager.Api.Controllers;
 
 [Authorize]
-[Route("api/[controller]")]
+[ApiVersion("1.0", Deprecated = false)]
+[ApiVersion("2.0", Deprecated = false)]
+[Route("api/v{apiVersion:apiVersion}/[controller]")]
 public class TagsController : ApiController
 {
 	private readonly ISender _sender;
@@ -23,6 +26,7 @@ public class TagsController : ApiController
 	}
 
 	[HttpPost()]
+	[MapToApiVersion("1.0")]
 	public async Task<IActionResult> Create([FromBody]DefaultTagRequest tagRequest)
 	{
 		var createResult = await _sender.Send( new CreateTagCommand(tagRequest.Name) );
@@ -32,8 +36,16 @@ public class TagsController : ApiController
 			errors => Problem( errors )
 			);
 	}
+	
+	[HttpPost()]
+	[MapToApiVersion("2.0")]
+	public async Task<IActionResult> CreateV2([FromBody]DefaultTagRequest tagRequest)
+	{
+		return Ok("create v2");
+	}
 
 	[HttpGet()]
+	[MapToApiVersion("1.0")]
 	public async Task<IActionResult> List()
 	{
 		var queryResult = await _sender.Send(new ListTagsQuery());
@@ -41,6 +53,7 @@ public class TagsController : ApiController
 	}
 	
 	[HttpGet("{id}")]
+	[MapToApiVersion("1.0")]
 	public async Task<IActionResult> GetById(Guid id)
 	{
 		var requestResult = await _sender.Send(new GetTagByIdQuery(id));
@@ -52,6 +65,7 @@ public class TagsController : ApiController
 	}
 	
 	[HttpDelete("{id}") ]
+	[MapToApiVersion("1.0")]
 	public async Task<IActionResult> DeleteById(Guid id)
 	{
 		var deleteResult = await _sender.Send(new DeleteTagCommand(id));
@@ -63,6 +77,7 @@ public class TagsController : ApiController
 	}
 	
 	[HttpPut("{id}") ]
+	[MapToApiVersion("1.0")]
 	public async Task<IActionResult> Update(Guid id, [FromBody] DefaultTagRequest request)
 	{
 		var updateResult = await _sender.Send(new UpdateTagCommand(id, request.Name));

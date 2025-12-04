@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using Asp.Versioning;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToDoManager.Application.Todos.Commands.AddTagIdToTodo;
@@ -19,7 +20,9 @@ using ToDoManager.Contracts.Todos.SubTodos;
 namespace ToDoManager.Api.Controllers;
 
 [Authorize]
-[Route("api/[controller]")]
+[ApiVersion("1.0", Deprecated = false)]
+// [ApiVersion("2.0")]
+[Route("api/v{apiVersion:apiVersion}/[controller]")]
 public class TodosController : ApiController
 {
 	private readonly ISender _sender;
