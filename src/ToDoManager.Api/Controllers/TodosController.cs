@@ -64,17 +64,6 @@ public class TodosController : ApiController
 			errors => Problem(errors)
 			);
 	}
-	
-	[HttpGet]
-	public async Task<IActionResult> GetTodosByUser([FromQuery]GetTodosByUserRequest query)
-	{
-		var queryResult = await _sender.Send( new  GetTodosByUserQuery(query.UserId) );
-		
-		return queryResult.Match(
-			result => Ok(result),
-			errors => Problem(errors)
-			);
-	}
 
 	[HttpPut("{todoId}")]
 	public async Task<IActionResult> Update(

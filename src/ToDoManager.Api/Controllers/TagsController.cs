@@ -12,7 +12,7 @@ using ToDoManager.Contracts.Tags;
 namespace ToDoManager.Api.Controllers;
 
 [Authorize]
-[Route("api/[controller]/[action]")]
+[Route("api/[controller]")]
 public class TagsController : ApiController
 {
 	private readonly ISender _sender;
@@ -40,7 +40,7 @@ public class TagsController : ApiController
 		return Ok(queryResult);
 	}
 	
-	[HttpGet("/{id}")]
+	[HttpGet("{id}")]
 	public async Task<IActionResult> GetById(Guid id)
 	{
 		var requestResult = await _sender.Send(new GetTagByIdQuery(id));
@@ -51,7 +51,7 @@ public class TagsController : ApiController
 			);
 	}
 	
-	[HttpDelete("/{id}") ]
+	[HttpDelete("{id}") ]
 	public async Task<IActionResult> DeleteById(Guid id)
 	{
 		var deleteResult = await _sender.Send(new DeleteTagCommand(id));
@@ -62,7 +62,7 @@ public class TagsController : ApiController
 			);
 	}
 	
-	[HttpPut("/{id}") ]
+	[HttpPut("{id}") ]
 	public async Task<IActionResult> Update(Guid id, [FromBody] DefaultTagRequest request)
 	{
 		var updateResult = await _sender.Send(new UpdateTagCommand(id, request.Name));

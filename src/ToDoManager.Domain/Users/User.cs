@@ -1,4 +1,5 @@
 ﻿using ToDoManager.Domain.Common.Models;
+using ToDoManager.Domain.Todos;
 using ToDoManager.Domain.Users.ValueObjects;
 
 namespace ToDoManager.Domain.Users;
@@ -10,6 +11,7 @@ public sealed class User : AggregateRoot<UserId>
 	
 	public string FirstName { get; private set; }
 	public string LastName { get; private set; }
+	public List<Todo> Todos { get; private set; } = new();
 	
 	private User(UserId id, string displayName, Email email, string firstName, string lastName) : base(id)
 	{
@@ -17,6 +19,15 @@ public sealed class User : AggregateRoot<UserId>
 		Email = email;
 		FirstName = firstName;
 		LastName = lastName;
+	}
+	
+	private User(UserId id, string displayName, Email email, string firstName, string lastName, List<Todo> todos) : base(id)
+	{
+		DisplayName = displayName;
+		Email = email;
+		FirstName = firstName;
+		LastName = lastName;
+		Todos = todos;
 	}
 
 	public static User Create(string displayName, string email, string firstName, string lastName)
@@ -27,6 +38,11 @@ public sealed class User : AggregateRoot<UserId>
 	public static User Create(Guid id, string displayName, string email, string firstName, string lastName)
 	{
 		return new (UserId.Create(id), displayName, Email.Create(email), firstName, lastName);
+	}
+	
+	public static User Create(Guid id, string displayName, string email, string firstName, string lastName, List<Todo> todos)
+	{
+		return new (UserId.Create(id), displayName, Email.Create(email), firstName, lastName, todos);
 	}
 	
 #pragma warning disable CS8618

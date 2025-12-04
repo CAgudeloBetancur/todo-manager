@@ -6,7 +6,7 @@ namespace ToDoManager.Application.Common.Interfaces.Authentication;
 public interface IUserRepository
 {
 	Task<User?> FindByEmailAsync(string email);
-	Task<User?> FindByIdAsync(string userId);
+	Task<User?> FindByIdWithTodosAsync(Guid userId);
 	Task<AuthenticationOperationResult> AddAsync(User user, string password);
 	Task<bool> CheckPasswordAsync(User user, string password);
 	Task<IList<string>> GetRolesAsync(User user);
