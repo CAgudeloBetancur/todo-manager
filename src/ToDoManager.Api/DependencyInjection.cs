@@ -20,29 +20,29 @@ public static class DependencyInjection
 			{
 				var httpContext = context.HttpContext;
 				var problemDetails = context.ProblemDetails;
-				
+
 				var traceId = Activity.Current?.Id ?? httpContext.TraceIdentifier;
 
 				if (!problemDetails.Extensions.ContainsKey("traceId"))
 				{
 					problemDetails.Extensions.Add("traceId", traceId);
 				}
-				
+
 				problemDetails.Status ??= httpContext.Response.StatusCode;
 			};
 		});
-			
+
 		services.AddExceptionHandler<GlobalExceptionHandler>();
-		
+
 		services.AddControllers();
-		
+
 		services.AddSingleton<ProblemDetailsFactory, ToDoManagerProblemDetailsFactory>();
-		
+
 		services.AddEndpointsApiExplorer();
-		
+
 		services
 			.ConfigureOptions<ConfigureSwaggerGenOptions>();
-		
+
 		services.AddSwaggerGen(c =>
 		{
 			var jwtSecurityScheme = new OpenApiSecurityScheme
@@ -59,9 +59,9 @@ public static class DependencyInjection
 					Type = ReferenceType.SecurityScheme
 				}
 			};
-			
+
 			c.AddSecurityDefinition(jwtSecurityScheme.Reference.Id, jwtSecurityScheme);
-			
+
 			c.AddSecurityRequirement(new OpenApiSecurityRequirement
 			{
 				{ jwtSecurityScheme, Array.Empty<string>() }

@@ -18,18 +18,14 @@ public static class DependencyInjection
 			});
 		
 		services
-			.AddScoped(
-				typeof(IPipelineBehavior<,>), 
-				typeof(LoggingBehavior<,>)
-				);
+			.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+		services
+			.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+		services
+			.AddScoped(typeof(IPipelineBehavior<,>), typeof(EnsureUserExistsBehavior<,>));
 		
 		services
-			.AddScoped(
-				typeof(IPipelineBehavior<,>), 
-				typeof(ValidationBehavior<,>)
-				);
-		
-		services.AddValidatorsFromAssemblyContaining<CreateTagCommandValidator>();
+			.AddValidatorsFromAssemblyContaining<CreateTagCommandValidator>();
 		
 		return services;
 	}

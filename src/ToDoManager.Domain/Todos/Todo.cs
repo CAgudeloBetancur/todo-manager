@@ -47,15 +47,29 @@ public sealed class Todo : AggregateRoot<TodoId>
 
 	public static Todo Create(
 		string title,
-		string description,
-		TodoStatus status,
-		TodoPriority priority,
-		DueDate dueDate,
-		UserId ownerId,
-		AuditInfo auditInfo
+		string? description,
+		string? status,
+		int? priority,
+		DateTime? dueDate,
+		UserId ownerId
 		)
 	{
-		return new(TodoId.CreateUnique(), title, description, status, priority, dueDate, ownerId, auditInfo);
+		var todoDescription = description ?? string.Empty;
+		var todoStatus = status is not null ? TodoStatus.From(status) : TodoStatus.Pending;
+		var todoPriority = priority is not null ? TodoPriority.Create(priority.Value) : TodoPriority.Medium;
+		var todoDueDate = DueDate.Create(dueDate ?? DateTime.UtcNow.AddDays(3));
+		var todoAuditInfo = AuditInfo.Create(ownerId.Value, DateTime.UtcNow);
+		
+		return new (
+			TodoId.CreateUnique(), 
+			title, 
+			todoDescription, 
+			todoStatus, 
+			todoPriority, 
+			todoDueDate, 
+			ownerId, 
+			todoAuditInfo
+			);
 	}
 	
 	public static Todo Create(

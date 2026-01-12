@@ -25,40 +25,55 @@ public class CreateTodoCommandHandler : IRequestHandler<CreateTodoCommand, Error
 		_unitOfWork = unitOfWork;
 	}
 
-	public async Task<ErrorOr<CreateTodoResult>> Handle(CreateTodoCommand request, CancellationToken cancellationToken)
+	public async Task<ErrorOr<CreateTodoResult>> Handle(
+		CreateTodoCommand request, 
+		CancellationToken cancellationToken
+		)
 	{
-		var currentUserId = _userAccessor.GetId();
-		
-		if(currentUserId is null) return Errors.Authentication.UserIdNotFound;
-		
-		var ownerId = UserId.Create((Guid)currentUserId);
+		var ownerId = _userAccessor.GetId();
 
-		var status = request.Status is not null
-			? TodoStatus.From(request.Status)
-			: TodoStatus.Pending;
-
-		var priority = request.Priority is not null
-			? TodoPriority.Create((int)request.Priority)
-			: TodoPriority.Medium;
-
-		var dueDate = DueDate.Create(request.DueDate ?? DateTime.UtcNow.AddDays(3));
-
-		var todo = Todo.Create(
-			request.Title,
-			request.Description ?? string.Empty,
-			status,
-			priority,
-			dueDate,
-			ownerId,
-			AuditInfo.Create(ownerId.Value, DateTime.UtcNow)
-			);
+		var todo = BuildTodoFromRequest(request, ownerId);
 
 		await _todoRepository.AddAsync(todo);
 		
-		var error = await _unitOfWork.SaveChangesAsync(cancellationToken);
+		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-		if (error is not null) return (Error)error;
-		
+		var persistenceResultCheck = EnsurePersistenceSucceeded(persistenceResult);
+
+		return BuildFinalResult(persistenceResultCheck, todo);
+	}
+
+	private static Todo BuildTodoFromRequest(CreateTodoCommand request, UserId ownerId)
+	{
+		return Todo.Create(
+			request.Title,
+			request.Description ?? string.Empty,
+			request.Status,
+			request.Priority,
+			request.DueDate,
+			ownerId
+		);
+	}
+
+	private static ErrorOr<Unit> EnsurePersistenceSucceeded(Error? persistenceResult)
+	{
+		return persistenceResult is not null 
+			? (Error)persistenceResult 
+			: Unit.Value;
+	}
+	
+	private static ErrorOr<CreateTodoResult> BuildFinalResult(
+		ErrorOr<Unit> persistenceResultCheck, 
+		Todo todo
+	)
+	{
+		return persistenceResultCheck.IsError
+			? persistenceResultCheck.Errors
+			: MapToResult(todo);
+	}
+
+	private static ErrorOr<CreateTodoResult> MapToResult(Todo todo)
+	{
 		return new CreateTodoResult(
 			todo.Id.Value,
 			todo.Title,
@@ -68,6 +83,6 @@ public class CreateTodoCommandHandler : IRequestHandler<CreateTodoCommand, Error
 			todo.DueDate.Value,
 			todo.OwnerId.Value,
 			todo.AuditInfo.CreatedAt
-			);
+		);
 	}
 }

@@ -30,11 +30,7 @@ public class UpdateTodoCommandHandler : IRequestHandler<UpdateTodoCommand, Error
 
 	public async Task<ErrorOr<Unit>> Handle(UpdateTodoCommand request, CancellationToken cancellationToken)
 	{
-		var userId = _userAccessor.GetId();
-
-		if (userId is null) return Errors.Authentication.UserIdNotFound;
-		
-		var ownerId = UserId.Create((Guid)userId);
+		var ownerId = _userAccessor.GetId();
 		
 		var todo = await _todoRepository.GetByIdForUserAsync(
 			TodoId.Create(request.TodoId),
