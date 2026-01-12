@@ -23,11 +23,9 @@ public class GetTodoByIdQueryHandler : IRequestHandler<GetTodoByIdQuery, ErrorOr
 	{
 		var currentUserId = _userAccessor.GetId();
 		
-		if (currentUserId is null) return Errors.Authentication.UserIdNotFound;
-		
 		var todo = await _todoRepository.GetByIdForUserAsync( 
 			TodoId.Create(request.TodoId),  
-			UserId.Create((Guid)currentUserId)
+			currentUserId
 			);
 
 		if (todo is null) return Errors.ToDo.NotFound;

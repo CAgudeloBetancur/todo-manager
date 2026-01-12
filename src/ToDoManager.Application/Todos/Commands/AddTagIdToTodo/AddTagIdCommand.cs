@@ -5,4 +5,4 @@ using ToDoManager.Domain.Todos.ValueObjects;
 
 namespace ToDoManager.Application.Todos.Commands.AddTagIdToTodo;
 
-public record AddTagIdToTodoCommand(Guid TodoId, Guid TagId) : IRequest<ErrorOr<Unit>>;
+public record AddTagIdToTodoCommand(TodoId TodoId, TagId TagId) : IRequest<ErrorOr<Unit>>;

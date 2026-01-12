@@ -26,11 +26,9 @@ public class ReorderSubTodosCommandHandler : IRequestHandler<ReorderSubTodosComm
 	public async Task<ErrorOr<Unit>> Handle(ReorderSubTodosCommand request, CancellationToken cancellationToken)
 	{
 		var currentUserId = _userAccessor.GetId();
-
-		if (currentUserId is null) return Errors.User.NotFound;
 		
 		var todo = await _todoRepository
-			.GetByIdForUserAsync(TodoId.Create(request.TodoId), UserId.Create((Guid)currentUserId));
+			.GetByIdForUserAsync(TodoId.Create(request.TodoId), currentUserId);
 
 		if (todo is null) return Errors.ToDo.NotFound;
 

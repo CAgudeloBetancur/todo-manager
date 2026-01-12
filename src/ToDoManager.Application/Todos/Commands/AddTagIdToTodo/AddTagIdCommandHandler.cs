@@ -4,9 +4,8 @@ using ToDoManager.Application.Common.Errors;
 using ToDoManager.Application.Common.Interfaces.Http;
 using ToDoManager.Application.Common.Interfaces.Persistence;
 using ToDoManager.Application.Common.Interfaces.Persistence.UnitOfWork;
-using ToDoManager.Domain.Tags.ValueObjects;
-using ToDoManager.Domain.Todos.ValueObjects;
-using ToDoManager.Domain.Users.ValueObjects;
+using ToDoManager.Domain.Tags;
+using ToDoManager.Domain.Todos;
 
 namespace ToDoManager.Application.Todos.Commands.AddTagIdToTodo;
 
@@ -34,24 +33,34 @@ public class AddTagIdCommandHandler : IRequestHandler<AddTagIdToTodoCommand, Err
 	{
 		var currentUserId = _userAccessor.GetId();
 		
-		if(currentUserId is null) return Errors.User.NotFound;
+		var todoQueryResult = await _todoRepository.GetByIdForUserAsync(request.TodoId, currentUserId);
+		var todo = EnsureTodoExists(todoQueryResult);
 
-		var todo = await _todoRepository
-			.GetByIdForUserAsync(
-				TodoId.Create(request.TodoId), 
-				UserId.Create((Guid)currentUserId)
-				);
-
-		if (todo is null) return Errors.ToDo.NotFound;
+		if (todo.IsError) return todo.Errors;
 		
-		var tag = await _tagRepository.GetByIdAsync(TagId.Create(request.TagId));
+		var tagQueryResult = await _tagRepository.GetByIdAsync(request.TagId);
+		var tag = EnsureTagExists(tagQueryResult);
 
-		if (tag is null) return Errors.Tag.NotFound;
+		if (tag.IsError) return tag.Errors;
 		
-		todo.AddTagId(tag.Id);
+		todo.Value.AddTagId(tag.Value.Id);
 		
 		await _unitOfWork.SaveChangesAsync(cancellationToken);
 
 		return Unit.Value;
+	}
+
+	private static ErrorOr<Todo> EnsureTodoExists(Todo? todo)
+	{
+		return todo is null
+			? Errors.ToDo.NotFound
+			: todo;
+	}
+
+	private static ErrorOr<Tag> EnsureTagExists(Tag? tag)
+	{
+		return tag is null
+			? Errors.Tag.NotFound
+			: tag;
 	}
 }

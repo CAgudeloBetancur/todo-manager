@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using ToDoManager.Application.Common.Interfaces.Http;
+using ToDoManager.Domain.Users.ValueObjects;
 
 namespace ToDoManager.Infrastructure.Http;
 
@@ -16,11 +17,39 @@ public sealed class UserAccessor : IUserAccessor
 	
 	private ClaimsPrincipal? User => _httpContextAccessor.HttpContext?.User;
 
-	public Guid? GetId()
+	public UserId GetId()
 	{
-		var userId = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+		var userIdClaimAsString = GetExistingUserIdClaim();
+		var userIdAsGuid = ParseUserIdClaim(userIdClaimAsString);
+		return UserId.Create(userIdAsGuid);
+	}
+
+	private string GetExistingUserIdClaim()
+	{
+		if(!IsUserLoggedIn()) 
+			throw new UnauthorizedAccessException("User not authenticated.");
 		
-		return Guid.TryParse(userId, out var guid) ? guid : null;
+		var claimValue = User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+		
+		if(string.IsNullOrEmpty(claimValue))
+			throw new UnauthorizedAccessException("User id missing.");
+
+		return claimValue;
+	}
+
+	private static Guid ParseUserIdClaim(string claimValue)
+	{
+		return !Guid.TryParse(claimValue, out var parsedUserId) 
+			? throw new InvalidOperationException("Invalid user id.") 
+			: parsedUserId;
+	}
+
+	public bool IsUserLoggedIn()
+	{
+		return (
+			User is { Identity.IsAuthenticated: true } && 
+			User.HasClaim(c => c.Type == ClaimTypes.NameIdentifier)
+			);
 	}
 
 	public string? GetEmail()

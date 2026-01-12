@@ -26,10 +26,8 @@ public class RemoveTagIdFromTodoCommandHandler : IRequestHandler<RemoveTagIdFrom
 	public async Task<ErrorOr<Unit>> Handle(RemoveTagIdFromTodoCommand request, CancellationToken cancellationToken)
 	{
 		var userId = _userAccessor.GetId();
-		
-		if(userId is null) return Errors.User.NotFound;
 
-		var todo = await _todoRepository.GetByIdForUserAsync(TodoId.Create(request.TodoId), UserId.Create((Guid)userId));
+		var todo = await _todoRepository.GetByIdForUserAsync(TodoId.Create(request.TodoId), userId);
 
 		if (todo is null) return Errors.ToDo.NotFound;
 		

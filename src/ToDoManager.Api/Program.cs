@@ -13,7 +13,8 @@ public class TodoManagerApi
 	
 	public TodoManagerApi(
 		string[] args, 
-		Action<IServiceCollection, IConfiguration> options
+		Action<IServiceCollection, IConfiguration> options,
+		Func<IServiceProvider, Task> initializeApplication
 		)
 	{
 		var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,13 @@ public class TodoManagerApi
 		options.Invoke(builder.Services, builder.Configuration);
 
 		_app = builder.Build();
+		
+		using (var scope = _app.Services.CreateScope())
+		{
+			initializeApplication(scope.ServiceProvider)
+				.GetAwaiter()
+				.GetResult();
+		}
 		
 		_app.UseRouting();
 		
@@ -67,6 +75,7 @@ public class TodoManagerApi
 					swaggerOptions.SwaggerEndpoint(url, name);
 				}
 			});
+			
 		}
 		
 		_app.UseHttpsRedirection();

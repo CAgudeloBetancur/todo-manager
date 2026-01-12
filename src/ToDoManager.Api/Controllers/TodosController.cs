@@ -16,6 +16,8 @@ using ToDoManager.Application.Todos.SubTodos.Commands.ReorderSubTodos;
 using ToDoManager.Application.Todos.SubTodos.Commands.UpdateSubTodo;
 using ToDoManager.Contracts.Todos;
 using ToDoManager.Contracts.Todos.SubTodos;
+using ToDoManager.Domain.Tags.ValueObjects;
+using ToDoManager.Domain.Todos.ValueObjects;
 
 namespace ToDoManager.Api.Controllers;
 
@@ -164,7 +166,10 @@ public class TodosController : ApiController
 		[FromBody] AddTagIdToTodoRequest request
 		)
 	{
-		var result = await _sender.Send(new AddTagIdToTodoCommand(todoId, request.TagId));
+		var result = await _sender
+			.Send( 
+				new AddTagIdToTodoCommand(TodoId.Create(todoId), TagId.Create(request.TagId)) 
+				);
 
 		return result.Match(
 			_ => NoContent(),
