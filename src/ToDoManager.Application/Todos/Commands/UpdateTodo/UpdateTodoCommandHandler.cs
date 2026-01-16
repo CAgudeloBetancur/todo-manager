@@ -30,37 +30,63 @@ public class UpdateTodoCommandHandler : IRequestHandler<UpdateTodoCommand, Error
 
 	public async Task<ErrorOr<Unit>> Handle(UpdateTodoCommand request, CancellationToken cancellationToken)
 	{
-		var ownerId = _userAccessor.GetId();
+		var ownerId = _userAccessor
+			.GetId();
+
+		var todoResult = await GetTodoByIdForUser(request.TodoId, ownerId);
 		
-		var todo = await _todoRepository.GetByIdForUserAsync(
-			TodoId.Create(request.TodoId),
-			ownerId
+		if (todoResult.IsError) 
+			return todoResult.Errors;
+
+		var todo = todoResult.Value;
+
+		if (!HasChangesComparedToRequest(todo, request)) 
+			return Unit.Value;
+		
+		ApplyChanges(request, todo);
+		
+		await _todoRepository.Update(todo);
+		
+		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
+		return EnsurePersistenceSucceeded(persistenceResult);
+	}
+
+	private static void ApplyChanges(UpdateTodoCommand request, Todo todo)
+	{
+		todo.Update(
+			request.Title, 
+			request.Description, 
+			request.Status, 
+			request.Priority, 
+			request.DueDate
 			);
+	}
 
-		if (todo is null) return Errors.ToDo.NotFound;
-		
-		var hasChanges =
-			todo.Title != request.Title ||
-			todo.Description != request.Description ||
-			todo.Status.Value != request.Status ||
-			todo.Priority.Value != request.Priority ||
-			todo.DueDate.Value != request.DueDate;
+	private static bool HasChangesComparedToRequest(Todo todo, UpdateTodoCommand request)
+	{
+		return todo.HasChanges(
+			request.Title,
+			request.Description,
+			request.DueDate,
+			request.Priority,
+			request.Status
+			);
+	}
 
-		if (hasChanges)
-		{
-			todo.UpdateTitle(request.Title);
-			todo.UpdateDescription(request.Description);
-			todo.UpdateStatus(TodoStatus.From(request.Status));
-			todo.UpdatePriority(TodoPriority.Create(request.Priority));
-			todo.UpdateDueDate(DueDate.Create(request.DueDate));
+	private async Task<ErrorOr<Todo>> GetTodoByIdForUser(TodoId todoId, UserId ownerId)
+	{
+		var todo = await _todoRepository
+			.GetByIdForUserAsync(todoId, ownerId);
 
-			await _todoRepository.Update(todo);
-			
-			var errors = await _unitOfWork.SaveChangesAsync(cancellationToken);
-			
-			if(errors is not null) return (Error)errors;
-		}
-		
-		return Unit.Value;
+		return todo is null 
+			? Errors.ToDo.NotFound 
+			: todo;
+	}
+	
+	private static ErrorOr<Unit> EnsurePersistenceSucceeded(Error? persistenceResult)
+	{
+		return persistenceResult is not null 
+			? (Error)persistenceResult 
+			: Unit.Value;
 	}
 };

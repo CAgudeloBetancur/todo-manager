@@ -10,7 +10,6 @@ namespace ToDoManager.Api.Controllers;
 
 [AllowAnonymous]
 [ApiVersion("1.0")]
-[ApiVersion("2.0")]
 [Route("api/v{apiVersion:apiVersion}/[controller]/[action]")]
 public class AuthenticationController : ApiController
 {

@@ -86,31 +86,37 @@ public sealed class Todo : AggregateRoot<TodoId>
 		return new(id, title, description, status, priority, dueDate, ownerId, auditInfo);
 	}
 
-	public void UpdateTitle(string newTitle)
+	public void Update(string title, string description, string status, int priority, DateTime dueDate)
+	{
+		UpdateTitle(title); 
+		UpdateDescription(description); 
+		UpdateStatus(TodoStatus.From(status)); 
+		UpdatePriority(TodoPriority.Create(priority));
+		UpdateDueDate(DueDate.Create(dueDate));
+		AuditInfo.UpdateModifiedAt(DateTime.UtcNow);
+	}
+
+	private void UpdateTitle(string newTitle)
 	{
 		Title = newTitle;
-		AuditInfo.UpdateModifiedAt(DateTime.UtcNow);
 	}
 
-	public void UpdateDescription(string newDescription)
+	private void UpdateDescription(string newDescription)
 	{
 		Description = newDescription;
-		AuditInfo.UpdateModifiedAt(DateTime.UtcNow);
 	}
 
-	public void UpdateStatus(TodoStatus newStatus)
+	private void UpdateStatus(TodoStatus newStatus)
 	{
 		Status = newStatus;
-		AuditInfo.UpdateModifiedAt(DateTime.UtcNow);
 	}
 
-	public void UpdatePriority(TodoPriority newPriority)
+	private void UpdatePriority(TodoPriority newPriority)
 	{
 		Priority = newPriority;
-		AuditInfo.UpdateModifiedAt(DateTime.UtcNow);
 	}
 
-	public void UpdateDueDate(DueDate newDueDate)
+	private void UpdateDueDate(DueDate newDueDate)
 	{
 		if (newDueDate.Value < DateTimeOffset.UtcNow)
 		{
@@ -118,7 +124,6 @@ public sealed class Todo : AggregateRoot<TodoId>
 		}
 		
 		DueDate = newDueDate;
-		AuditInfo.UpdateModifiedAt(DateTime.UtcNow);
 	}
 	
 	public void AddSubTodo(string title, string description, bool isComplete)
@@ -200,6 +205,16 @@ public sealed class Todo : AggregateRoot<TodoId>
 	public void ClearTagIds()
 	{
 		_tagIds.Clear();
+	}
+
+	public bool HasChanges(string title, string description, DateTime duedate, int priority, string status)
+	{
+		return Title != title ||
+			Description != description ||
+			Status.Value != status ||
+			Priority.Value != priority ||
+			DueDate.Value != duedate; 
+			
 	}
 
 #pragma warning disable CS8618

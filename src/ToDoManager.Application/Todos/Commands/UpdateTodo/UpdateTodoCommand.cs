@@ -1,10 +1,11 @@
 ﻿using ErrorOr;
 using MediatR;
+using ToDoManager.Domain.Todos.ValueObjects;
 
 namespace ToDoManager.Application.Todos.Commands.UpdateTodo;
 
 public record UpdateTodoCommand(
-	Guid TodoId,
+	TodoId TodoId,
 	string Title,
 	string Description,
 	DateTime DueDate,
