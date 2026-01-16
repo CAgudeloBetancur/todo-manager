@@ -43,7 +43,10 @@ public class CreateTodoCommandHandler : IRequestHandler<CreateTodoCommand, Error
 		return BuildFinalResult(persistenceResultCheck, todo);
 	}
 
-	private static Todo BuildTodoFromRequest(CreateTodoCommand request, UserId ownerId)
+	private static Todo BuildTodoFromRequest(
+		CreateTodoCommand request, 
+		UserId ownerId
+		)
 	{
 		return Todo.Create(
 			request.Title,
@@ -55,7 +58,9 @@ public class CreateTodoCommandHandler : IRequestHandler<CreateTodoCommand, Error
 		);
 	}
 
-	private static ErrorOr<Unit> EnsurePersistenceSucceeded(Error? persistenceResult)
+	private static ErrorOr<Unit> EnsurePersistenceSucceeded(
+		Error? persistenceResult
+		)
 	{
 		return persistenceResult is not null 
 			? (Error)persistenceResult 
@@ -65,14 +70,16 @@ public class CreateTodoCommandHandler : IRequestHandler<CreateTodoCommand, Error
 	private static ErrorOr<CreateTodoResult> BuildFinalResult(
 		ErrorOr<Unit> persistenceResultCheck, 
 		Todo todo
-	)
+		)
 	{
 		return persistenceResultCheck.IsError
 			? persistenceResultCheck.Errors
 			: MapToResult(todo);
 	}
 
-	private static ErrorOr<CreateTodoResult> MapToResult(Todo todo)
+	private static ErrorOr<CreateTodoResult> MapToResult(
+		Todo todo
+		)
 	{
 		return new CreateTodoResult(
 			todo.Id.Value,

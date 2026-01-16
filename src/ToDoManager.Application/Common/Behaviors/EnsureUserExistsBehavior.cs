@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using ToDoManager.Application.Authentication.Common.Interfaces;
 using ToDoManager.Application.Common.Interfaces.Http;
 
 namespace ToDoManager.Application.Common.Behaviors;
@@ -19,6 +20,8 @@ public class EnsureUserExistsBehavior<TRequest, TResponse> : IPipelineBehavior<T
 		CancellationToken cancellationToken
 		)
 	{
+		if (request is IAllowAnonymous) 
+			return await next();
 		
 		if(!_userAccessor.IsUserLoggedIn()) 
 			throw new UnauthorizedAccessException("User not authenticated.");
