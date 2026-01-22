@@ -5,6 +5,7 @@ using ToDoManager.Application.Common.Interfaces.Http;
 using ToDoManager.Application.Common.Interfaces.Persistence;
 using ToDoManager.Application.Common.Interfaces.Persistence.UnitOfWork;
 using ToDoManager.Domain.Tags.ValueObjects;
+using ToDoManager.Domain.Todos;
 using ToDoManager.Domain.Todos.ValueObjects;
 using ToDoManager.Domain.Users.ValueObjects;
 
@@ -25,16 +26,30 @@ public class RemoveTagIdFromTodoCommandHandler : IRequestHandler<RemoveTagIdFrom
 
 	public async Task<ErrorOr<Unit>> Handle(RemoveTagIdFromTodoCommand request, CancellationToken cancellationToken)
 	{
-		var userId = _userAccessor.GetId();
+		var currentUserId = _userAccessor.GetId();
 
-		var todo = await _todoRepository.GetByIdForUserAsync(TodoId.Create(request.TodoId), userId);
+		var queryResult = await GetTodoByIdForUserAsync(request.TodoId, currentUserId);
 
-		if (todo is null) return Errors.ToDo.NotFound;
+		if (queryResult.IsError) return queryResult.Errors;
+
+		var todo = queryResult.Value;
 		
-		todo.RemoveTagId(TagId.Create(request.TagId));
+		todo.RemoveTagId(request.TagId);
 
-		await _unitOfWork.SaveChangesAsync(cancellationToken);
+		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-		return Unit.Value;
+		return EnsurePersistenceResult(persistenceResult);
+	}
+
+	private async Task<ErrorOr<Todo>> GetTodoByIdForUserAsync(TodoId todoId, UserId userId)
+	{
+		var todo = await _todoRepository.GetByIdForUserAsync(todoId, userId);
+
+		return todo is null ? Errors.ToDo.NotFound : todo;
+	}
+
+	private static ErrorOr<Unit> EnsurePersistenceResult(Error? persistenceResult)
+	{
+		return persistenceResult is not null ? (Error)persistenceResult : Unit.Value;
 	}
 }
