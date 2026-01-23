@@ -102,7 +102,9 @@ public class TodosController : ApiController
 	[HttpDelete("{todoId}")]
 	public async Task<IActionResult> Delete(Guid todoId)
 	{
-		var deleteResult = await _sender.Send(new DeleteTodoCommand(todoId));
+		var stronglyTypedTodoId = TodoId.Create(todoId);
+		
+		var deleteResult = await _sender.Send(new DeleteTodoCommand(stronglyTypedTodoId));
 
 		return deleteResult.Match(
 			_ => NoContent(),
@@ -180,11 +182,11 @@ public class TodosController : ApiController
 	[HttpDelete("{todoId}/tags/{tagId}")]
 	public async Task<IActionResult> RemoveTagIdFromTodo(Guid todoId, Guid tagId)
 	{
-		var domainTodoId = TodoId.Create(todoId);
-		var domainTagId = TagId.Create(todoId);
+		var stronglyTypedTodoId = TodoId.Create(todoId);
+		var stronglyTypedTagId = TagId.Create(todoId);
 		
 		var result = await _sender
-			.Send(new RemoveTagIdFromTodoCommand( domainTodoId, domainTagId));
+			.Send(new RemoveTagIdFromTodoCommand( stronglyTypedTodoId, stronglyTypedTagId));
 
 		return result.Match(
 			_ => NoContent(),
@@ -195,10 +197,10 @@ public class TodosController : ApiController
 	[HttpDelete("{todoId}/tags")]
 	public async Task<IActionResult> ClearTagIdsFromTodo(Guid todoId)
 	{
-		var domainTodoId = TodoId.Create(todoId);
+		var stronglyTypedTodoId = TodoId.Create(todoId);
 		
 		var result = await _sender
-			.Send(new ClearTagIdsFromTodoCommand(domainTodoId));
+			.Send(new ClearTagIdsFromTodoCommand(stronglyTypedTodoId));
 
 		return result.Match(
 			_ => NoContent(),
