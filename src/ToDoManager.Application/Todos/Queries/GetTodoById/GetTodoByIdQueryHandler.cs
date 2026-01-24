@@ -3,6 +3,8 @@ using MediatR;
 using ToDoManager.Application.Common.Errors;
 using ToDoManager.Application.Common.Interfaces.Http;
 using ToDoManager.Application.Common.Interfaces.Persistence;
+using ToDoManager.Domain.Todos;
+using ToDoManager.Domain.Todos.Entities;
 using ToDoManager.Domain.Todos.ValueObjects;
 using ToDoManager.Domain.Users.ValueObjects;
 
@@ -19,17 +21,23 @@ public class GetTodoByIdQueryHandler : IRequestHandler<GetTodoByIdQuery, ErrorOr
 		_userAccessor = userAccessor;
 	}
 
-	public async Task<ErrorOr<GetTodoByIdResult>> Handle(GetTodoByIdQuery request, CancellationToken cancellationToken)
+	public async Task<ErrorOr<GetTodoByIdResult>> Handle(
+		GetTodoByIdQuery request, 
+		CancellationToken cancellationToken
+		)
 	{
 		var currentUserId = _userAccessor.GetId();
 		
-		var todo = await _todoRepository.GetByIdForUserAsync( 
-			TodoId.Create(request.TodoId),  
-			currentUserId
-			);
+		var queryResult = await GetTodoByIdForUserAsync(request.TodoId, currentUserId);
+		if (queryResult.IsError) return queryResult.Errors;
 
-		if (todo is null) return Errors.ToDo.NotFound;
+		var todo = queryResult.Value;
 		
+		return MapToResult(todo);
+	}
+
+	private static ErrorOr<GetTodoByIdResult> MapToResult(Todo todo)
+	{
 		return new GetTodoByIdResult
 		(
 			todo.Id.Value,
@@ -41,11 +49,21 @@ public class GetTodoByIdQueryHandler : IRequestHandler<GetTodoByIdQuery, ErrorOr
 			todo.DueDate.Value,
 			todo.OwnerId.Value,
 			todo.AuditInfo.CreatedAt,
-			todo
-				.SubTodos
-				.OrderBy(st => st.Order)
-				.Select(st => new SubTodoResponse(st.Title, st.Description, st.IsComplete, st.Order))
-				.ToList()
+			MapSubTodos(todo.SubTodos)
 		);
+	}
+
+	private static List<SubTodoResponse> MapSubTodos(IEnumerable<SubTodo> subTodos)
+	{
+		return subTodos
+			.OrderBy(st => st.Order)
+			.Select(st => new SubTodoResponse(st.Title, st.Description, st.IsComplete, st.Order))
+			.ToList();
+	}
+
+	private async Task<ErrorOr<Todo>> GetTodoByIdForUserAsync(TodoId todoId, UserId userId)
+	{
+		var todo = await _todoRepository.GetByIdForUserAsync(todoId, userId);
+		return todo is null ? Errors.ToDo.NotFound : todo;
 	}
 }
