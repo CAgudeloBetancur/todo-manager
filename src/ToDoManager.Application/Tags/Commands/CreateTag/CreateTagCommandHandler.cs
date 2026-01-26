@@ -24,11 +24,28 @@ public class CreateTagCommandHandler : IRequestHandler<CreateTagCommand, ErrorOr
 		var tag = Tag.Create(request.Name);
 
 		await _tagRepository.AddAsync(tag);
+
+		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 		
-		var error = await _unitOfWork.SaveChangesAsync(cancellationToken);
+		var persistenceResultCheck = EnsurePersistenceSucceeded(persistenceResult);
 
-		if (error is not null) return (Error)error; 
+		return BuildFinalResult(persistenceResultCheck, tag);
+	}
 
-		return new DefaultTagResult(tag.Id.Value, tag.Name);
+	private ErrorOr<Unit> EnsurePersistenceSucceeded(Error? persistenceResult)
+	{
+		return persistenceResult is not null 
+			? (Error)persistenceResult 
+			: Unit.Value;
+	}
+
+	private ErrorOr<DefaultTagResult> BuildFinalResult(
+		ErrorOr<Unit> persistenceResultCheck,
+		Tag tag
+		)
+	{
+		return persistenceResultCheck.IsError
+			? persistenceResultCheck.Errors
+			: new DefaultTagResult(tag.Id.Value, tag.Name);
 	}
 }
