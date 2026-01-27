@@ -79,11 +79,13 @@ public class TagsController : ApiController
 			);
 	}
 	
-	[HttpPut("{id}") ]
+	[HttpPut("{tagId}") ]
 	[MapToApiVersion("1.0")]
-	public async Task<IActionResult> Update(Guid id, [FromBody] DefaultTagRequest request)
+	public async Task<IActionResult> Update(Guid tagId, [FromBody] DefaultTagRequest request)
 	{
-		var updateResult = await _sender.Send(new UpdateTagCommand(id, request.Name));
+		var stronglyTypedTagId = TagId.Create(tagId);
+		
+		var updateResult = await _sender.Send(new UpdateTagCommand(stronglyTypedTagId, request.Name));
 
 		return updateResult.Match(
 			_ => NoContent(),

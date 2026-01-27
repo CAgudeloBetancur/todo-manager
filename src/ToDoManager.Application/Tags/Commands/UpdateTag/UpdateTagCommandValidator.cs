@@ -10,7 +10,7 @@ public class UpdateTagCommandValidator :  AbstractValidator<UpdateTagCommand>
 			.NotEmpty()
 			.WithMessage("Name is required");
 		
-		RuleFor(x => x.Id)
+		RuleFor(x => x.TagId)
 			.NotEmpty()
 			.WithMessage("Id is required");
 	}

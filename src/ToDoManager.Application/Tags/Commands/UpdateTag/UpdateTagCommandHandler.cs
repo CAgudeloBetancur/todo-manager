@@ -21,16 +21,31 @@ public class UpdateTagCommandHandler : IRequestHandler<UpdateTagCommand, ErrorOr
 
 	public async Task<ErrorOr<Unit>> Handle(UpdateTagCommand request, CancellationToken cancellationToken)
 	{
-		var currentTag = await _repository.GetByIdAsync(TagId.Create(request.Id));
+		var tagResult = await GetTagByidAsync(request.TagId);
 
-		if (currentTag is null) return Errors.Tag.NotFound;
+		if (tagResult.IsError) return tagResult.Errors;
 		
-		await _repository.Update(currentTag, Tag.Create(request.Id, request.Name));
+		var currentTag = tagResult.Value;
 
-		var error = await _unitOfWork.SaveChangesAsync(cancellationToken);
+		var newValues = Tag.Create(request.TagId, request.Name);
+		
+		await _repository.Update(currentTag, newValues);
 
-		if (error is not null) return (Error)error;
+		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-		return Unit.Value;
+		return EnsurePersistenceSucceeded(persistenceResult);
+	}
+
+	private async Task<ErrorOr<Tag>> GetTagByidAsync(TagId tagId)
+	{
+		var tag = await _repository.GetByIdAsync(tagId);
+		return tag is null ? Errors.Tag.NotFound : tag;
+	} 
+	
+	private static ErrorOr<Unit> EnsurePersistenceSucceeded(Error? persistenceResult)
+	{
+		return persistenceResult is not null 
+			? (Error)persistenceResult 
+			: Unit.Value;
 	}
 }
