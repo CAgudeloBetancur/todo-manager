@@ -3,12 +3,13 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToDoManager.Application.Tags.Commands.CreateTag;
-using ToDoManager.Application.Tags.Commands.RemoveTag;
+using ToDoManager.Application.Tags.Commands.DeleteTag;
 using ToDoManager.Application.Tags.Commands.UpdateTag;
 using ToDoManager.Application.Tags.Common;
 using ToDoManager.Application.Tags.Queries.GetTagByIdQuery;
 using ToDoManager.Application.Tags.Queries.ListTags;
 using ToDoManager.Contracts.Tags;
+using ToDoManager.Domain.Tags.ValueObjects;
 
 namespace ToDoManager.Api.Controllers;
 
@@ -64,11 +65,13 @@ public class TagsController : ApiController
 			);
 	}
 	
-	[HttpDelete("{id}") ]
+	[HttpDelete("{tagId}") ]
 	[MapToApiVersion("1.0")]
-	public async Task<IActionResult> DeleteById(Guid id)
+	public async Task<IActionResult> DeleteById(Guid tagId)
 	{
-		var deleteResult = await _sender.Send(new DeleteTagCommand(id));
+		var stronglyTypedTagId = TagId.Create(tagId); 
+		
+		var deleteResult = await _sender.Send(new DeleteTagCommand(stronglyTypedTagId));
 
 		return deleteResult.Match(
 			_ => NoContent(),
