@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ToDoManager.Application.Tags.Commands.CreateTag;
-using ToDoManager.Application.Tags.Commands.RemoveTag;
+using ToDoManager.Application.Tags.Commands.DeleteTag;
 using ToDoManager.Application.Tags.Commands.UpdateTag;
 using ToDoManager.Application.Tags.Common;
 using ToDoManager.Application.Tags.Queries.GetTagByIdQuery;

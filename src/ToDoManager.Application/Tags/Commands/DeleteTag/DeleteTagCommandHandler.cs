@@ -5,7 +5,7 @@ using ToDoManager.Application.Common.Interfaces.Persistence;
 using ToDoManager.Application.Common.Interfaces.Persistence.UnitOfWork;
 using ToDoManager.Domain.Tags.ValueObjects;
 
-namespace ToDoManager.Application.Tags.Commands.RemoveTag;
+namespace ToDoManager.Application.Tags.Commands.DeleteTag;
 
 public class DeleteTagCommandHandler : IRequestHandler<DeleteTagCommand, ErrorOr<Unit>>
 {
