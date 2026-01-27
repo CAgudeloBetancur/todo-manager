@@ -3,6 +3,7 @@ using MediatR;
 using ToDoManager.Application.Common.Errors;
 using ToDoManager.Application.Common.Interfaces.Persistence;
 using ToDoManager.Application.Common.Interfaces.Persistence.UnitOfWork;
+using ToDoManager.Domain.Tags;
 using ToDoManager.Domain.Tags.ValueObjects;
 
 namespace ToDoManager.Application.Tags.Commands.DeleteTag;
@@ -20,16 +21,29 @@ public class DeleteTagCommandHandler : IRequestHandler<DeleteTagCommand, ErrorOr
 
 	public async Task<ErrorOr<Unit>> Handle(DeleteTagCommand request, CancellationToken cancellationToken)
 	{
-		var currentTag = await _tagRepository.GetByIdAsync(TagId.Create(request.Id));
+		var tagResult = await GetTagByIdAsync(request.TagId);
 
-		if (currentTag is null) return Errors.Tag.NotFound;
+		if (tagResult.IsError) return tagResult.Errors;
 		
-		await _tagRepository.RemoveAsync(currentTag);
-
-		var error = await _unitOfWork.SaveChangesAsync(cancellationToken);
+		var tag = tagResult.Value;
 		
-		if(error is not null) return (Error)error;
+		await _tagRepository.RemoveAsync(tag);
 
-		return Unit.Value;
+		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
+		
+		return BuildFinalResultFromPersistenceResult(persistenceResult);
+	}
+
+	private async Task<ErrorOr<Tag>> GetTagByIdAsync(TagId tagId)
+	{
+		var tag = await _tagRepository.GetByIdAsync(tagId);
+		return tag is null ? Errors.Tag.NotFound : tag;
+	}
+
+	private static ErrorOr<Unit> BuildFinalResultFromPersistenceResult(Error? persistenceResult)
+	{
+		return persistenceResult is not null 
+			? (Error)persistenceResult 
+			: Unit.Value;
 	}
 }
