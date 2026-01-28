@@ -6,6 +6,7 @@ using ToDoManager.Application.Tags.Commands.CreateTag;
 using ToDoManager.Application.Tags.Commands.DeleteTag;
 using ToDoManager.Application.Tags.Commands.UpdateTag;
 using ToDoManager.Application.Tags.Common;
+using ToDoManager.Application.Tags.Queries.GetTagById;
 using ToDoManager.Application.Tags.Queries.GetTagByIdQuery;
 using ToDoManager.Application.Tags.Queries.ListTags;
 using ToDoManager.Contracts.Tags;
@@ -53,11 +54,13 @@ public class TagsController : ApiController
 		return Ok(queryResult);
 	}
 	
-	[HttpGet("{id}")]
+	[HttpGet("{tagId}")]
 	[MapToApiVersion("1.0")]
-	public async Task<IActionResult> GetById(Guid id)
+	public async Task<IActionResult> GetById(Guid tagId)
 	{
-		var requestResult = await _sender.Send(new GetTagByIdQuery(id));
+		var stronglyTypedTagId = TagId.Create(tagId);
+		
+		var requestResult = await _sender.Send(new GetTagByIdQuery(stronglyTypedTagId));
 
 		return requestResult.Match(
 			result => Ok(new DefaultTagResponse(result.Id, result.Name)),

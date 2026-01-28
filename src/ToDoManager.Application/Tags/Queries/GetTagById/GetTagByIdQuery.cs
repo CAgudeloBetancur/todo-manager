@@ -1,7 +1,8 @@
 ﻿using ErrorOr;
 using MediatR;
 using ToDoManager.Application.Tags.Common;
+using ToDoManager.Domain.Tags.ValueObjects;
 
-namespace ToDoManager.Application.Tags.Queries.GetTagByIdQuery;
+namespace ToDoManager.Application.Tags.Queries.GetTagById;
 
-public record GetTagByIdQuery(Guid Id) : IRequest<ErrorOr<DefaultTagResult>>;
+public record GetTagByIdQuery(TagId TagId) : IRequest<ErrorOr<DefaultTagResult>>;
