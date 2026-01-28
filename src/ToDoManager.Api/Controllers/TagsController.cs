@@ -6,6 +6,7 @@ using ToDoManager.Application.Tags.Commands.CreateTag;
 using ToDoManager.Application.Tags.Commands.DeleteTag;
 using ToDoManager.Application.Tags.Commands.UpdateTag;
 using ToDoManager.Application.Tags.Common;
+using ToDoManager.Application.Tags.Queries.GetTagById;
 using ToDoManager.Application.Tags.Queries.GetTagByIdQuery;
 using ToDoManager.Application.Tags.Queries.ListTags;
 using ToDoManager.Contracts.Tags;
