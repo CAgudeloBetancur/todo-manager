@@ -26,21 +26,39 @@ public class ReorderSubTodosCommandHandler : IRequestHandler<ReorderSubTodosComm
 	public async Task<ErrorOr<Unit>> Handle(ReorderSubTodosCommand request, CancellationToken cancellationToken)
 	{
 		var currentUserId = _userAccessor.GetId();
+		var todoId = TodoId.Create(request.TodoId);
+		var todoResult = await GetTodoByIdForUser(todoId, currentUserId);
 		
-		var todo = await _todoRepository
-			.GetByIdForUserAsync(TodoId.Create(request.TodoId), currentUserId);
+		if (todoResult.IsError) return todoResult.Errors;
 
-		if (todo is null) return Errors.ToDo.NotFound;
-
-		var domainOrderList = request
-			.SubTodos
-			.Select(x => (x.Id, x.Order))
-			.ToList();
-		
+		var domainOrderList = ToDomainOrderList(request.SubTodos);
+		var todo = todoResult.Value;
 		todo.ReorderSubTodos(domainOrderList);
 		
-		await _unitOfWork.SaveChangesAsync(cancellationToken);
+		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-		return Unit.Value;
+		return EnsurePersistenceSucceeded(persistenceResult);
+	}
+
+	private static ErrorOr<Unit> EnsurePersistenceSucceeded(Error? persistenceResult)
+	{
+		return persistenceResult is not null 
+			? (Error)persistenceResult 
+			: Unit.Value;
+	}
+
+	private async Task<ErrorOr<Todo>> GetTodoByIdForUser(TodoId todoId, UserId userId)
+	{
+		var todo = await _todoRepository.GetByIdForUserAsync(todoId, userId);
+		return todo is null 
+			? Errors.ToDo.NotFound 
+			: todo;
+	}
+
+	private static List<(Guid Id, int Order)> ToDomainOrderList(List<ReorderSubTodosDto> subTodosDto)
+	{
+		return subTodosDto
+			.Select(x => (x.Id, x.Order))
+			.ToList();
 	}
 }
