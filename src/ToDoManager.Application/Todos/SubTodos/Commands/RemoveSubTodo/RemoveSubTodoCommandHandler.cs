@@ -26,15 +26,38 @@ public class RemoveSubTodoCommandHandler : IRequestHandler<RemoveSubTodoCommand,
 	public async Task<ErrorOr<Unit>> Handle(RemoveSubTodoCommand request, CancellationToken cancellationToken)
 	{
 		var currentUserId = _userAccessor.GetId();
-		
-		var todo = await _todoRepository.GetByIdForUserAsync(TodoId.Create(request.TodoId), currentUserId);
 
-		if (todo is null) return Errors.ToDo.NotFound;
-		
-		todo.RemoveSubTodo(SubTodoId.Create(request.SubTodoId));
-		
-		await _unitOfWork.SaveChangesAsync(cancellationToken);
+		var todoId = ToTodoId(request.TodoId);
+		var todoResult = await GetTodoByIdForUser(todoId, currentUserId);
+		if (todoResult.IsError) return todoResult.Errors;
 
-		return Unit.Value;
+		var todo = todoResult.Value;
+		var subTodoId = ToSubTodoId(request.SubTodoId);
+		todo.RemoveSubTodo(subTodoId);
+		
+		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+		return EnsurePersistenceSucceeded(persistenceResult);
+	}
+
+	private ErrorOr<Unit> EnsurePersistenceSucceeded(Error? persistenceResult)
+	{
+		return persistenceResult is not null ? (Error)persistenceResult : Unit.Value;
+	}
+
+	private SubTodoId ToSubTodoId(Guid requestSubTodoId)
+	{
+		return SubTodoId.Create(requestSubTodoId);
+	}
+
+	private static TodoId ToTodoId(Guid requestTodoId)
+	{
+		return TodoId.Create(requestTodoId);
+	}
+
+	private async Task<ErrorOr<Todo>> GetTodoByIdForUser(TodoId todoId, UserId userId)
+	{
+		var todo = await _todoRepository.GetByIdForUserAsync(todoId, userId);
+		return todo is null ? Errors.ToDo.NotFound : todo;
 	}
 }
