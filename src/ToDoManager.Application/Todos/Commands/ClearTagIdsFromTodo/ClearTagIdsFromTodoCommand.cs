@@ -4,5 +4,5 @@ using ToDoManager.Domain.Todos.ValueObjects;
 
 namespace ToDoManager.Application.Todos.Commands.ClearTagIdsFromTodo;
 
-public record ClearTagIdsFromTodoCommand(TodoId TodoId)
+public record ClearTagIdsFromTodoCommand(Guid TodoId)
 	: IRequest<ErrorOr<Unit>>;
