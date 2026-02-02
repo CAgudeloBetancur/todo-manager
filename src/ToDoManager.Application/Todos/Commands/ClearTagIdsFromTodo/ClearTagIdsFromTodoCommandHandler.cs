@@ -28,7 +28,9 @@ public class ClearTagIdsFromTodoCommandHandler : IRequestHandler<ClearTagIdsFrom
 	{
 		var currentUserId = _userAccessor.GetId();
 
-		var queryResult = await GetTodoByIdForUserAsync(request.TodoId, currentUserId);
+		var todoId = ToTodoId(request.TodoId);
+		
+		var queryResult = await GetTodoByIdForUserAsync(todoId, currentUserId);
 		if (queryResult.IsError) return queryResult.Errors;
 
 		var todo = queryResult.Value;
@@ -38,6 +40,11 @@ public class ClearTagIdsFromTodoCommandHandler : IRequestHandler<ClearTagIdsFrom
 		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
 		return EnsurePersistenceSucceeded(persistenceResult);
+	}
+
+	private static TodoId ToTodoId(Guid primitiveTodoId)
+	{
+		return TodoId.Create(primitiveTodoId);
 	}
 
 	private async Task<ErrorOr<Todo>> GetTodoByIdForUserAsync(TodoId todoId, UserId userId)
