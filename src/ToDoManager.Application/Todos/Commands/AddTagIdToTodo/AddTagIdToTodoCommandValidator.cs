@@ -2,9 +2,9 @@
 
 namespace ToDoManager.Application.Todos.Commands.AddTagIdToTodo;
 
-public class AddTagIdCommandValidator : AbstractValidator<AddTagIdToTodoCommand>
+public class AddTagIdToTodoCommandValidator : AbstractValidator<AddTagIdToTodoCommand>
 {
-	public AddTagIdCommandValidator()
+	public AddTagIdToTodoCommandValidator()
 	{
 		RuleFor(x => x.TagId)
 			.NotNull()

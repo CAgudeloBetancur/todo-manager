@@ -6,6 +6,6 @@ using ToDoManager.Domain.Todos.ValueObjects;
 namespace ToDoManager.Application.Todos.Commands.AddTagIdToTodo;
 
 public record AddTagIdToTodoCommand(
-	TodoId TodoId, 
-	TagId TagId
+	Guid TodoId, 
+	Guid TagId
 	)	: IRequest<ErrorOr<Unit>>;
