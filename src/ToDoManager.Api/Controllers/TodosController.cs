@@ -197,10 +197,8 @@ public class TodosController : ApiController
 	[HttpDelete("{todoId}/tags")]
 	public async Task<IActionResult> ClearTagIdsFromTodo(Guid todoId)
 	{
-		var stronglyTypedTodoId = TodoId.Create(todoId);
-		
 		var result = await _sender
-			.Send(new ClearTagIdsFromTodoCommand(stronglyTypedTodoId));
+			.Send(new ClearTagIdsFromTodoCommand(todoId));
 
 		return result.Match(
 			_ => NoContent(),
