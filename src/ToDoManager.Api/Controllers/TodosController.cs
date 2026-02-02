@@ -171,9 +171,7 @@ public class TodosController : ApiController
 		)
 	{
 		var result = await _sender
-			.Send( 
-				new AddTagIdToTodoCommand(TodoId.Create(todoId), TagId.Create(request.TagId)) 
-				);
+			.Send(new AddTagIdToTodoCommand(todoId, request.TagId));
 
 		return result.Match(
 			_ => NoContent(),
