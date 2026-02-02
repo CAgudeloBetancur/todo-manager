@@ -11,14 +11,14 @@ using ToDoManager.Domain.Todos.ValueObjects;
 
 namespace ToDoManager.Application.Todos.Commands.AddTagIdToTodo;
 
-public class AddTagIdCommandHandler : IRequestHandler<AddTagIdToTodoCommand, ErrorOr<Unit>>
+public class AddTagIdToTodoCommandHandler : IRequestHandler<AddTagIdToTodoCommand, ErrorOr<Unit>>
 {
 	private readonly ITodoRepository _todoRepository;
 	private readonly ITagRepository _tagRepository;
 	private readonly IUnitOfWork _unitOfWork;
 	private readonly IUserAccessor _userAccessor;
 
-	public AddTagIdCommandHandler(
+	public AddTagIdToTodoCommandHandler(
 		ITodoRepository todoRepository, 
 		ITagRepository tagRepository, 
 		IUnitOfWork unitOfWork, 
