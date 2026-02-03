@@ -86,7 +86,7 @@ public class TodosController : ApiController
 		var requestResult = await _sender
 			.Send(
 				new UpdateTodoCommand(
-					TodoId.Create(todoId), 
+					todoId, 
 					request.Title,
 					request.Description,
 					dueDate.UtcDateTime,
