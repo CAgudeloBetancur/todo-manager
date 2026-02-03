@@ -58,9 +58,7 @@ public class TagsController : ApiController
 	[MapToApiVersion("1.0")]
 	public async Task<IActionResult> GetById(Guid tagId)
 	{
-		var stronglyTypedTagId = TagId.Create(tagId);
-		
-		var requestResult = await _sender.Send(new GetTagByIdQuery(stronglyTypedTagId));
+		var requestResult = await _sender.Send(new GetTagByIdQuery(tagId));
 
 		return requestResult.Match(
 			result => Ok(new DefaultTagResponse(result.Id, result.Name)),
