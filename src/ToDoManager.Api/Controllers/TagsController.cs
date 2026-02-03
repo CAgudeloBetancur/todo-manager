@@ -84,9 +84,7 @@ public class TagsController : ApiController
 	[MapToApiVersion("1.0")]
 	public async Task<IActionResult> Update(Guid tagId, [FromBody] DefaultTagRequest request)
 	{
-		var stronglyTypedTagId = TagId.Create(tagId);
-		
-		var updateResult = await _sender.Send(new UpdateTagCommand(stronglyTypedTagId, request.Name));
+		var updateResult = await _sender.Send(new UpdateTagCommand(tagId, request.Name));
 
 		return updateResult.Match(
 			_ => NoContent(),

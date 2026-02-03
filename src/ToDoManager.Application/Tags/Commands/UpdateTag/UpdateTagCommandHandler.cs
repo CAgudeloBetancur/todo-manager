@@ -21,13 +21,15 @@ public class UpdateTagCommandHandler : IRequestHandler<UpdateTagCommand, ErrorOr
 
 	public async Task<ErrorOr<Unit>> Handle(UpdateTagCommand request, CancellationToken cancellationToken)
 	{
-		var tagResult = await GetTagByidAsync(request.TagId);
+		var tagId = ToTagId(request.TagId);
+		
+		var tagResult = await GetTagByidAsync(tagId);
 
 		if (tagResult.IsError) return tagResult.Errors;
 		
 		var currentTag = tagResult.Value;
 
-		var newValues = Tag.Create(request.TagId, request.Name);
+		var newValues = Tag.Create(tagId, request.Name);
 		
 		await _repository.Update(currentTag, newValues);
 
@@ -35,6 +37,8 @@ public class UpdateTagCommandHandler : IRequestHandler<UpdateTagCommand, ErrorOr
 
 		return EnsurePersistenceSucceeded(persistenceResult);
 	}
+
+	private static TagId ToTagId(Guid primitiveTagId) => TagId.Create(primitiveTagId);
 
 	private async Task<ErrorOr<Tag>> GetTagByidAsync(TagId tagId)
 	{
