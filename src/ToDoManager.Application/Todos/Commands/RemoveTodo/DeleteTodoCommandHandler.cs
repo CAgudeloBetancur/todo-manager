@@ -27,7 +27,9 @@ public class DeleteTodoCommandHandler : IRequestHandler<DeleteTodoCommand, Error
 	{
 		var currentUserId = _userAccessor.GetId();
 
-		var requestResult = await GetTodoByIdForUserAsync(request.TodoId, currentUserId);
+		var todoId = ToTodoId(request.TodoId);
+
+		var requestResult = await GetTodoByIdForUserAsync(todoId, currentUserId);
 
 		if(requestResult.IsError) return requestResult.Errors;
 
@@ -39,6 +41,8 @@ public class DeleteTodoCommandHandler : IRequestHandler<DeleteTodoCommand, Error
 		
 		return EnsurePersistenceResult(persistenceResult);
 	}
+
+	private static TodoId ToTodoId(Guid primitiveTodoId) => TodoId.Create(primitiveTodoId);
 
 	private async Task<ErrorOr<Todo>> GetTodoByIdForUserAsync(TodoId todoId, UserId userId)
 	{
