@@ -5,7 +5,7 @@ using ToDoManager.Domain.Todos.ValueObjects;
 namespace ToDoManager.Application.Todos.Commands.UpdateTodo;
 
 public record UpdateTodoCommand(
-	TodoId TodoId,
+	Guid TodoId,
 	string Title,
 	string Description,
 	DateTime DueDate,

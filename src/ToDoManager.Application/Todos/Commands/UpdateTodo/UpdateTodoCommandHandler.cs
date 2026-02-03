@@ -33,7 +33,9 @@ public class UpdateTodoCommandHandler : IRequestHandler<UpdateTodoCommand, Error
 		var ownerId = _userAccessor
 			.GetId();
 
-		var todoResult = await GetTodoByIdForUser(request.TodoId, ownerId);
+		var todoId = ToTodoId(request.TodoId);
+
+		var todoResult = await GetTodoByIdForUser(todoId, ownerId);
 		
 		if (todoResult.IsError) 
 			return todoResult.Errors;
@@ -50,6 +52,8 @@ public class UpdateTodoCommandHandler : IRequestHandler<UpdateTodoCommand, Error
 		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 		return EnsurePersistenceSucceeded(persistenceResult);
 	}
+
+	private static TodoId ToTodoId(Guid primitiveTodoId) => TodoId.Create(primitiveTodoId); 
 
 	private static void ApplyChanges(UpdateTodoCommand request, Todo todo)
 	{
