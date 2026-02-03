@@ -72,9 +72,7 @@ public class TagsController : ApiController
 	[MapToApiVersion("1.0")]
 	public async Task<IActionResult> DeleteById(Guid tagId)
 	{
-		var stronglyTypedTagId = TagId.Create(tagId); 
-		
-		var deleteResult = await _sender.Send(new DeleteTagCommand(stronglyTypedTagId));
+		var deleteResult = await _sender.Send(new DeleteTagCommand(tagId));
 
 		return deleteResult.Match(
 			_ => NoContent(),
