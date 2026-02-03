@@ -28,18 +28,25 @@ public class RemoveTagIdFromTodoCommandHandler : IRequestHandler<RemoveTagIdFrom
 	{
 		var currentUserId = _userAccessor.GetId();
 
-		var queryResult = await GetTodoByIdForUserAsync(request.TodoId, currentUserId);
+		var todoId = ToTodoId(request.TodoId);
+
+		var queryResult = await GetTodoByIdForUserAsync(todoId, currentUserId);
 
 		if (queryResult.IsError) return queryResult.Errors;
 
 		var todo = queryResult.Value;
+
+		var tagId = ToTagId(request.TagId);
 		
-		todo.RemoveTagId(request.TagId);
+		todo.RemoveTagId(tagId);
 
 		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
 		return EnsurePersistenceResult(persistenceResult);
 	}
+	
+	private static TodoId ToTodoId(Guid primitiveTodoId) => TodoId.Create(primitiveTodoId);
+	private static TagId ToTagId(Guid primitiveTagId) => TagId.Create(primitiveTagId);
 
 	private async Task<ErrorOr<Todo>> GetTodoByIdForUserAsync(TodoId todoId, UserId userId)
 	{
