@@ -104,9 +104,7 @@ public class TodosController : ApiController
 	[HttpDelete("{todoId}")]
 	public async Task<IActionResult> Delete(Guid todoId)
 	{
-		var stronglyTypedTodoId = TodoId.Create(todoId);
-		
-		var deleteResult = await _sender.Send(new DeleteTodoCommand(stronglyTypedTodoId));
+		var deleteResult = await _sender.Send(new DeleteTodoCommand(todoId));
 
 		return deleteResult.Match(
 			_ => NoContent(),
