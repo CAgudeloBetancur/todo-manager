@@ -4,4 +4,4 @@ using ToDoManager.Domain.Tags.ValueObjects;
 
 namespace ToDoManager.Application.Tags.Commands.UpdateTag;
 
-public record class UpdateTagCommand(TagId TagId, string Name) : IRequest<ErrorOr<Unit>>;
+public record class UpdateTagCommand(Guid TagId, string Name) : IRequest<ErrorOr<Unit>>;
