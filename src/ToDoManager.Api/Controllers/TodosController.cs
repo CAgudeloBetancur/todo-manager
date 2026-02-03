@@ -62,9 +62,7 @@ public class TodosController : ApiController
 	[HttpGet("{todoId}")]
 	public async Task<IActionResult> GetTodoById(Guid todoId)
 	{
-		var stronglyTypedTodoId = TodoId.Create(todoId);
-		
-		var queryResult = await _sender.Send( new  GetTodoByIdQuery(stronglyTypedTodoId) );
+		var queryResult = await _sender.Send(new  GetTodoByIdQuery(todoId));
 
 		return queryResult.Match(
 			result => Ok(result),
