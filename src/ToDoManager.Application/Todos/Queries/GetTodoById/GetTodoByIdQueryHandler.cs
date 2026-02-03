@@ -27,14 +27,18 @@ public class GetTodoByIdQueryHandler : IRequestHandler<GetTodoByIdQuery, ErrorOr
 		)
 	{
 		var currentUserId = _userAccessor.GetId();
+
+		var todoId = ToTodoId(request.TodoId);
 		
-		var queryResult = await GetTodoByIdForUserAsync(request.TodoId, currentUserId);
+		var queryResult = await GetTodoByIdForUserAsync(todoId, currentUserId);
 		if (queryResult.IsError) return queryResult.Errors;
 
 		var todo = queryResult.Value;
 		
 		return MapToResult(todo);
 	}
+
+	private static TodoId ToTodoId(Guid primitiveTodoId) => TodoId.Create(primitiveTodoId);
 
 	private static ErrorOr<GetTodoByIdResult> MapToResult(Todo todo)
 	{
