@@ -21,7 +21,9 @@ public class DeleteTagCommandHandler : IRequestHandler<DeleteTagCommand, ErrorOr
 
 	public async Task<ErrorOr<Unit>> Handle(DeleteTagCommand request, CancellationToken cancellationToken)
 	{
-		var tagResult = await GetTagByIdAsync(request.TagId);
+		var tagId = ToTagId(request.TagId);
+		
+		var tagResult = await GetTagByIdAsync(tagId);
 
 		if (tagResult.IsError) return tagResult.Errors;
 		
@@ -33,6 +35,8 @@ public class DeleteTagCommandHandler : IRequestHandler<DeleteTagCommand, ErrorOr
 		
 		return BuildFinalResultFromPersistenceResult(persistenceResult);
 	}
+
+	private static TagId ToTagId(Guid primitiveTagId) => TagId.Create(primitiveTagId);
 
 	private async Task<ErrorOr<Tag>> GetTagByIdAsync(TagId tagId)
 	{
