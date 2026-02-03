@@ -19,7 +19,9 @@ public class GetTagByIdQueryHandler : IRequestHandler<GetTagById.GetTagByIdQuery
 
 	public async Task<ErrorOr<DefaultTagResult>> Handle(GetTagById.GetTagByIdQuery request, CancellationToken cancellationToken)
 	{
-		var tagResult = await GetTagByIdAsync(request.TagId);
+		var tagId = ToTagId(request.TagId);
+		
+		var tagResult = await GetTagByIdAsync(tagId);
 
 		if (tagResult.IsError) return tagResult.Errors;
 
@@ -27,6 +29,8 @@ public class GetTagByIdQueryHandler : IRequestHandler<GetTagById.GetTagByIdQuery
 
 		return MapToResult(tag);
 	}
+
+	private static TagId ToTagId(Guid primitiveTagId) => TagId.Create(primitiveTagId);
 
 	private async Task<ErrorOr<Tag>> GetTagByIdAsync(TagId tagId)
 	{
