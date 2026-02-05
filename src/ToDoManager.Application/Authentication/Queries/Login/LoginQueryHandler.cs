@@ -28,8 +28,10 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<Authenticat
 		var passwordCheckResult = await _userRepository.CheckPasswordAsync(user, request.Password);
 		
 		if (!passwordCheckResult) return Errors.Authentication.InvalidCredentials;
+
+		var userRoles = await _userRepository.GetRolesAsync(user);
 		
-		var token = _jwtTokenGenerator.GenerateToken(user);
+		var token = _jwtTokenGenerator.GenerateToken(user, userRoles);
 
 		return new AuthenticationResult(
 			user,
