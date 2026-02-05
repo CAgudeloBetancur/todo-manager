@@ -48,6 +48,7 @@ public class TagsController : ApiController
 
 	[HttpGet()]
 	[MapToApiVersion("1.0")]
+	[Authorize(Policy = "OnlyAdmin")]
 	public async Task<IActionResult> List()
 	{
 		var queryResult = await _sender.Send(new ListTagsQuery());
