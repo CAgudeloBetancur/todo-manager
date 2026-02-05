@@ -36,7 +36,9 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<A
 				.Select(e => Error.Validation(e.Code, e.Description))
 				.ToList();
 
-		var token = _jwtTokenGenerator.GenerateToken(user);
+		var userRole = new List<string> { "User" };
+
+		var token = _jwtTokenGenerator.GenerateToken(user, userRole);
 		
 		return new AuthenticationResult(user, token);
 	}
