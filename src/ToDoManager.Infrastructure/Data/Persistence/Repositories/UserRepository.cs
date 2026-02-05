@@ -91,14 +91,13 @@ public class UserRepository : IUserRepository
 
 	public async Task<AuthenticationOperationResult> AddToRoleAsync(User user, string roleName)
 	{
-		var identityUser = new ApplicationUser()
+		var identityUser = await _userManager.FindByEmailAsync(user.Email.Value);
+
+		if (identityUser is null)
 		{
-			Id = user.Id.Value,
-			UserName = user.Email.Value,
-			Email = user.Email.Value,
-			FirstName = user.FirstName,
-			LastName = user.LastName,
-		};
+			var error = new AuthenticationError($"Identity.User", "User not found");
+			return AuthenticationOperationResult.Failure([error]);
+		}
 		
 		var result = await _userManager.AddToRoleAsync(identityUser,  roleName);
 		
