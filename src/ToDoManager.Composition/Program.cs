@@ -98,6 +98,10 @@ var api = new TodoManagerApi(
 			.AddEntityFrameworkStores<ApplicationDbContext>()
 			.AddDefaultTokenProviders();
 
+		services
+			.AddAuthorizationBuilder()
+            .AddPolicy("OnlyAdmin", policy => policy.RequireRole("Admin"));
+
 	},
 	InitializeApplication
 	);

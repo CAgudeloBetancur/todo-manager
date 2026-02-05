@@ -88,4 +88,26 @@ public class UserRepository : IUserRepository
 		
 		return await _userManager.GetRolesAsync(identityUser);
 	}
+
+	public async Task<AuthenticationOperationResult> AddToRoleAsync(User user, string roleName)
+	{
+		var identityUser = new ApplicationUser()
+		{
+			Id = user.Id.Value,
+			UserName = user.Email.Value,
+			Email = user.Email.Value,
+			FirstName = user.FirstName,
+			LastName = user.LastName,
+		};
+		
+		var result = await _userManager.AddToRoleAsync(identityUser,  roleName);
+		
+		if(result.Succeeded) return AuthenticationOperationResult.Success();
+		
+		var errors = result.Errors
+			.Select(e => new AuthenticationError($"Identity.{e.Code}", e.Description))
+			.ToList();
+		
+		return AuthenticationOperationResult.Failure(errors);
+	}
 }

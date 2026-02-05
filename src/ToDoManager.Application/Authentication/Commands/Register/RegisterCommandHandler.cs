@@ -32,11 +32,20 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<A
 		var creationResult = await _userRepository.AddAsync(user, request.Password);
 		
 		if(!creationResult.Succeeded) 
-			return creationResult.Errors
+			return creationResult
+				.Errors
 				.Select(e => Error.Validation(e.Code, e.Description))
 				.ToList();
 
-		var token = _jwtTokenGenerator.GenerateToken(user);
+		var addToRoleAsyncResult = await _userRepository.AddToRoleAsync(user, "User");
+		
+		if(!addToRoleAsyncResult.Succeeded)
+			return creationResult
+				.Errors
+				.Select(e => Error.Validation(e.Code, e.Description))
+				.ToList();
+
+		var token = _jwtTokenGenerator.GenerateToken(user, new List<string> {"User"});
 		
 		return new AuthenticationResult(user, token);
 	}
