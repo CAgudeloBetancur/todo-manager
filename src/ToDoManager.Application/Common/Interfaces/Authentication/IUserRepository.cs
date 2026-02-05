@@ -10,4 +10,5 @@ public interface IUserRepository
 	Task<AuthenticationOperationResult> AddAsync(User user, string password);
 	Task<bool> CheckPasswordAsync(User user, string password);
 	Task<IList<string>> GetRolesAsync(User user);
+	Task<AuthenticationOperationResult> AddToRoleAsync(User user, string roleName);
 }
