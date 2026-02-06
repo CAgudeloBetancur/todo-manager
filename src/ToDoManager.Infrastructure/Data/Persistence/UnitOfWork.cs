@@ -23,6 +23,7 @@ public class UnitOfWork : IUnitOfWork
 
 	public async Task BeginTransaction()
 	{
+		_logger.LogInformation("Beginning transaction");
 		_currentTransaction = await _context.Database.BeginTransactionAsync();
 	}
 
@@ -32,7 +33,10 @@ public class UnitOfWork : IUnitOfWork
 
 		if (_currentTransaction != null)
 		{
+			_logger.LogInformation("Commiting transaction");
 			await _currentTransaction.CommitAsync();
+			
+			_logger.LogInformation("Disposing transaction");
 			await _currentTransaction.DisposeAsync();
 		}
 	}
@@ -41,13 +45,17 @@ public class UnitOfWork : IUnitOfWork
 	{
 		if (_currentTransaction != null)
 		{
+			_logger.LogInformation("Rolling back transaction");
 			await _currentTransaction.RollbackAsync();
+			
+			_logger.LogInformation("Disposing transaction");
 			await _currentTransaction.DisposeAsync();
 		}
 	}
 
 	public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
 	{
+		_logger.LogInformation("Saving changes");
 		return await _context.SaveChangesAsync(cancellationToken);
 	}
 }
