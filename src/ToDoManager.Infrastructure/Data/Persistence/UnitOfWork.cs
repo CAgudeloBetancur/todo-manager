@@ -29,8 +29,6 @@ public class UnitOfWork : IUnitOfWork
 
 	public async Task CommitAsync()
 	{
-		await _context.SaveChangesAsync();
-
 		if (_currentTransaction != null)
 		{
 			_logger.LogInformation("Commiting transaction");
