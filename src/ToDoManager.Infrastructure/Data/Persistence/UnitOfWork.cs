@@ -1,5 +1,6 @@
 ﻿using ErrorOr;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using ToDoManager.Application.Common.Errors;
@@ -11,6 +12,7 @@ namespace ToDoManager.Infrastructure.Data.Persistence;
 public class UnitOfWork : IUnitOfWork
 {
 	private readonly ApplicationDbContext _context;
+	private IDbContextTransaction? _currentTransaction;
 	private readonly ILogger<UnitOfWork> _logger;
 	
 	public UnitOfWork(ApplicationDbContext context, ILogger<UnitOfWork> logger)
@@ -18,34 +20,45 @@ public class UnitOfWork : IUnitOfWork
 		_context = context;
 		_logger = logger;
 	}
-	
-	public async Task<Error?> SaveChangesAsync(CancellationToken cancellationToken = default)
+
+	public IExecutionStrategy CreateExecutionStrategy()
 	{
-		try
+		return _context.Database.CreateExecutionStrategy();
+	}
+
+	public async Task BeginTransactionAsync()
+	{
+		_logger.LogInformation("Beginning transaction");
+		_currentTransaction = await _context.Database.BeginTransactionAsync();
+	}
+
+	public async Task CommitAsync()
+	{
+		if (_currentTransaction != null)
 		{
-			await _context.SaveChangesAsync(cancellationToken);
-			return null;
+			_logger.LogInformation("Commiting transaction");
+			await _currentTransaction.CommitAsync();
+			
+			_logger.LogInformation("Disposing transaction");
+			await _currentTransaction.DisposeAsync();
 		}
-		catch (DbUpdateConcurrencyException ex)
+	}
+
+	public async Task RollbackAsync()
+	{
+		if (_currentTransaction != null)
 		{
-			_logger.LogWarning(ex, "Concurrency conflict detected while saving changes.");
-			return Errors.Persistence.ConcurrencyConflict;
+			_logger.LogInformation("Rolling back transaction");
+			await _currentTransaction.RollbackAsync();
+			
+			_logger.LogInformation("Disposing transaction");
+			await _currentTransaction.DisposeAsync();
 		}
-		catch (DbUpdateException ex) when  (ex.InnerException is NpgsqlException sqlEx)
-		{
-			_logger.LogWarning(ex, "Database constraint violation: {@SqlState}.", sqlEx.SqlState);
-			return sqlEx.SqlState switch
-			{
-				"23503" => Errors.Persistence.ForeignKeyViolation,
-				"23505" => Errors.Persistence.UniqueConstraintViolation,
-				"23502" => Errors.Persistence.NullConstraintViolation,
-				_ => Errors.Persistence.SaveFailure
-			};
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Unexpected error while saving changes.");
-			return Errors.Persistence.Unexpected;
-		}
+	}
+
+	public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+	{
+		_logger.LogInformation("Saving changes");
+		return await _context.SaveChangesAsync(cancellationToken);
 	}
 }

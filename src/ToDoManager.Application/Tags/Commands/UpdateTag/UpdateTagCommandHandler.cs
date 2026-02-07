@@ -33,9 +33,7 @@ public class UpdateTagCommandHandler : IRequestHandler<UpdateTagCommand, ErrorOr
 		
 		await _repository.Update(currentTag, newValues);
 
-		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-		return EnsurePersistenceSucceeded(persistenceResult);
+		return Unit.Value;
 	}
 
 	private static TagId ToTagId(Guid primitiveTagId) => TagId.Create(primitiveTagId);
@@ -45,11 +43,4 @@ public class UpdateTagCommandHandler : IRequestHandler<UpdateTagCommand, ErrorOr
 		var tag = await _repository.GetByIdAsync(tagId);
 		return tag is null ? Errors.Tag.NotFound : tag;
 	} 
-	
-	private static ErrorOr<Unit> EnsurePersistenceSucceeded(Error? persistenceResult)
-	{
-		return persistenceResult is not null 
-			? (Error)persistenceResult 
-			: Unit.Value;
-	}
 }

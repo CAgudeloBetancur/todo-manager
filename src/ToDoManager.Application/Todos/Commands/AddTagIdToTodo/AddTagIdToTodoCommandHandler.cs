@@ -50,8 +50,6 @@ public class AddTagIdToTodoCommandHandler : IRequestHandler<AddTagIdToTodoComman
 		if (tag.IsError) return tag.Errors;
 		
 		todo.Value.AddTagId(tag.Value.Id);
-		
-		await _unitOfWork.SaveChangesAsync(cancellationToken);
 
 		return Unit.Value;
 	}

@@ -35,18 +35,11 @@ public class CreateTodoCommandHandler : IRequestHandler<CreateTodoCommand, Error
 		var todo = BuildTodoFromRequest(request, ownerId);
 
 		await _todoRepository.AddAsync(todo);
-		
-		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-		var persistenceResultCheck = EnsurePersistenceSucceeded(persistenceResult);
-
-		return BuildFinalResult(persistenceResultCheck, todo);
+		return MapToResult(todo);
 	}
 
-	private static Todo BuildTodoFromRequest(
-		CreateTodoCommand request, 
-		UserId ownerId
-		)
+	private static Todo BuildTodoFromRequest(CreateTodoCommand request, UserId ownerId)
 	{
 		return Todo.Create(
 			request.Title,
@@ -58,28 +51,7 @@ public class CreateTodoCommandHandler : IRequestHandler<CreateTodoCommand, Error
 		);
 	}
 
-	private static ErrorOr<Unit> EnsurePersistenceSucceeded(
-		Error? persistenceResult
-		)
-	{
-		return persistenceResult is not null 
-			? (Error)persistenceResult 
-			: Unit.Value;
-	}
-	
-	private static ErrorOr<CreateTodoResult> BuildFinalResult(
-		ErrorOr<Unit> persistenceResultCheck, 
-		Todo todo
-		)
-	{
-		return persistenceResultCheck.IsError
-			? persistenceResultCheck.Errors
-			: MapToResult(todo);
-	}
-
-	private static ErrorOr<CreateTodoResult> MapToResult(
-		Todo todo
-		)
+	private static CreateTodoResult MapToResult(Todo todo)
 	{
 		return new CreateTodoResult(
 			todo.Id.Value,

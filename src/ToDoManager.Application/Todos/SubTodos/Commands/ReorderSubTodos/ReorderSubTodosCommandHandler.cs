@@ -34,17 +34,8 @@ public class ReorderSubTodosCommandHandler : IRequestHandler<ReorderSubTodosComm
 		var domainOrderList = ToDomainOrderList(request.SubTodos);
 		var todo = todoResult.Value;
 		todo.ReorderSubTodos(domainOrderList);
-		
-		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-		return EnsurePersistenceSucceeded(persistenceResult);
-	}
-
-	private static ErrorOr<Unit> EnsurePersistenceSucceeded(Error? persistenceResult)
-	{
-		return persistenceResult is not null 
-			? (Error)persistenceResult 
-			: Unit.Value;
+		return Unit.Value;
 	}
 
 	private async Task<ErrorOr<Todo>> GetTodoByIdForUser(TodoId todoId, UserId userId)

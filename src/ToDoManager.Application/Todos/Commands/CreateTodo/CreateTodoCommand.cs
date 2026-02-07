@@ -1,5 +1,6 @@
 ﻿using ErrorOr;
 using MediatR;
+using ToDoManager.Application.Common.Interfaces.CQRS;
 
 namespace ToDoManager.Application.Todos.Commands.CreateTodo;
 
@@ -9,4 +10,4 @@ public record class CreateTodoCommand(
 	DateTime? DueDate,
 	int? Priority,
 	string? Status
-	) : IRequest<ErrorOr<CreateTodoResult>>;
+	) : ICommand<ErrorOr<CreateTodoResult>>;

@@ -1,5 +1,6 @@
 ﻿using ErrorOr;
 using MediatR;
+using ToDoManager.Application.Common.Interfaces.CQRS;
 using ToDoManager.Domain.Todos.ValueObjects;
 
 namespace ToDoManager.Application.Todos.Commands.UpdateTodo;
@@ -11,4 +12,4 @@ public record UpdateTodoCommand(
 	DateTime DueDate,
 	int Priority,
 	string Status
-	) : IRequest<ErrorOr<Unit>>;
+	) : ICommand<ErrorOr<Unit>>;

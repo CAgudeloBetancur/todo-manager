@@ -40,12 +40,11 @@ public class RemoveTagIdFromTodoCommandHandler : IRequestHandler<RemoveTagIdFrom
 		
 		todo.RemoveTagId(tagId);
 
-		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-		return EnsurePersistenceResult(persistenceResult);
+		return Unit.Value;
 	}
 	
 	private static TodoId ToTodoId(Guid primitiveTodoId) => TodoId.Create(primitiveTodoId);
+	
 	private static TagId ToTagId(Guid primitiveTagId) => TagId.Create(primitiveTagId);
 
 	private async Task<ErrorOr<Todo>> GetTodoByIdForUserAsync(TodoId todoId, UserId userId)
@@ -53,10 +52,5 @@ public class RemoveTagIdFromTodoCommandHandler : IRequestHandler<RemoveTagIdFrom
 		var todo = await _todoRepository.GetByIdForUserAsync(todoId, userId);
 
 		return todo is null ? Errors.ToDo.NotFound : todo;
-	}
-
-	private static ErrorOr<Unit> EnsurePersistenceResult(Error? persistenceResult)
-	{
-		return persistenceResult is not null ? (Error)persistenceResult : Unit.Value;
 	}
 }

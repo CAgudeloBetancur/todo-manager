@@ -34,15 +34,8 @@ public class RemoveSubTodoCommandHandler : IRequestHandler<RemoveSubTodoCommand,
 		var todo = todoResult.Value;
 		var subTodoId = ToSubTodoId(request.SubTodoId);
 		todo.RemoveSubTodo(subTodoId);
-		
-		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-		return EnsurePersistenceSucceeded(persistenceResult);
-	}
-
-	private ErrorOr<Unit> EnsurePersistenceSucceeded(Error? persistenceResult)
-	{
-		return persistenceResult is not null ? (Error)persistenceResult : Unit.Value;
+		return Unit.Value;
 	}
 
 	private SubTodoId ToSubTodoId(Guid requestSubTodoId)
