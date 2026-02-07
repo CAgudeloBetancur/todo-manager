@@ -25,22 +25,34 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
 	{
 		if (request is IQuery<TResponse>) return await next();
 
-		await _unitOfWork.BeginTransactionAsync();
+		var strategy = _unitOfWork.CreateExecutionStrategy();
 
-		try
-		{
-			var response = await next();
-			
-			await _unitOfWork.SaveChangesAsync(cancellationToken);
-			await _unitOfWork.CommitAsync();
+		return await strategy.ExecuteAsync(
+			state: (request, next, _unitOfWork, _logger),
+			operation: async (dbContext, state, cancelToken) =>
+			{
+				var (req, handlerDelegate, unitOfWork, logger) = state;
+				
+				await unitOfWork.BeginTransactionAsync();
 
-			return response;
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Error in transaction for {Request}", typeof(TRequest).Name);
-			await _unitOfWork.RollbackAsync();
-			throw;
-		}
+				try
+				{
+					var response = await handlerDelegate();
+				
+					await unitOfWork.SaveChangesAsync(cancelToken);
+					await unitOfWork.CommitAsync();
+
+					return response;
+				}
+				catch (Exception ex)
+				{
+					logger.LogError(ex, "Error in transaction for {Request}", typeof(TRequest).Name);
+					await unitOfWork.RollbackAsync();
+					throw;
+				}
+			},
+			verifySucceeded: null,
+			cancellationToken: cancellationToken
+			);
 	}	
 }
