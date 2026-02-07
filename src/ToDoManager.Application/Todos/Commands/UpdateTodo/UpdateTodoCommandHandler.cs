@@ -48,9 +48,8 @@ public class UpdateTodoCommandHandler : IRequestHandler<UpdateTodoCommand, Error
 		ApplyChanges(request, todo);
 		
 		await _todoRepository.Update(todo);
-		
-		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
-		return EnsurePersistenceSucceeded(persistenceResult);
+
+		return Unit.Value;
 	}
 
 	private static TodoId ToTodoId(Guid primitiveTodoId) => TodoId.Create(primitiveTodoId); 
@@ -85,12 +84,5 @@ public class UpdateTodoCommandHandler : IRequestHandler<UpdateTodoCommand, Error
 		return todo is null 
 			? Errors.ToDo.NotFound 
 			: todo;
-	}
-	
-	private static ErrorOr<Unit> EnsurePersistenceSucceeded(Error? persistenceResult)
-	{
-		return persistenceResult is not null 
-			? (Error)persistenceResult 
-			: Unit.Value;
 	}
 };
