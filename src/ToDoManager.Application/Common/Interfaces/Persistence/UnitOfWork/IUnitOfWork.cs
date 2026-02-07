@@ -1,9 +1,11 @@
 ﻿using ErrorOr;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace ToDoManager.Application.Common.Interfaces.Persistence.UnitOfWork;
 
 public interface IUnitOfWork
 {
+	IExecutionStrategy CreateExecutionStrategy();
 	Task BeginTransactionAsync();
 	Task CommitAsync();
 	Task RollbackAsync();

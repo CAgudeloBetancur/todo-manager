@@ -21,6 +21,11 @@ public class UnitOfWork : IUnitOfWork
 		_logger = logger;
 	}
 
+	public IExecutionStrategy CreateExecutionStrategy()
+	{
+		return _context.Database.CreateExecutionStrategy();
+	}
+
 	public async Task BeginTransactionAsync()
 	{
 		_logger.LogInformation("Beginning transaction");
