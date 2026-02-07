@@ -23,6 +23,8 @@ public static class DependencyInjection
 			.AddScoped(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 		services
 			.AddScoped(typeof(IPipelineBehavior<,>), typeof(EnsureUserExistsBehavior<,>));
+		services
+			.AddScoped(typeof(IPipelineBehavior<,>), typeof(TransactionBehavior<,>));
 		
 		services
 			.AddValidatorsFromAssemblyContaining<CreateTagCommandValidator>();
