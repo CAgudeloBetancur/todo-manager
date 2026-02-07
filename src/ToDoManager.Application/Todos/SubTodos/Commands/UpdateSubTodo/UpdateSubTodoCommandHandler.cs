@@ -13,13 +13,11 @@ namespace ToDoManager.Application.Todos.SubTodos.Commands.UpdateSubTodo;
 public class UpdateSubTodoCommandHandler : IRequestHandler<UpdateSubTodoCommand, ErrorOr<Unit>>
 {
 	private readonly ITodoRepository _todoRepository;
-	private readonly IUnitOfWork _unitOfWork;
 	private readonly IUserAccessor _userAccessor;
 
 	public UpdateSubTodoCommandHandler(ITodoRepository todoRepository, IUnitOfWork unitOfWork, IUserAccessor userAccessor)
 	{
 		_todoRepository = todoRepository;
-		_unitOfWork = unitOfWork;
 		_userAccessor = userAccessor;
 	}
 	
@@ -46,23 +44,16 @@ public class UpdateSubTodoCommandHandler : IRequestHandler<UpdateSubTodoCommand,
 			request.Description, 
 			request.IsComplete
 			);
-		
-		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-		return EnsurePersistenceSucceeded(persistenceResult);
+		return Unit.Value;
 	}
 
-	private ErrorOr<Unit> EnsurePersistenceSucceeded(Error? persistenceResult)
-	{
-		return persistenceResult is not null ? (Error)persistenceResult : Unit.Value;
-	}
-
-	private TodoId ToTodoId(Guid todoIdFromRequest)
+	private static TodoId ToTodoId(Guid todoIdFromRequest)
 	{
 		return TodoId.Create(todoIdFromRequest);
 	}
 	
-	private SubTodoId ToSubTodoId(Guid subTodoIdFromRequest)
+	private static SubTodoId ToSubTodoId(Guid subTodoIdFromRequest)
 	{
 		return SubTodoId.Create(subTodoIdFromRequest);
 	}
