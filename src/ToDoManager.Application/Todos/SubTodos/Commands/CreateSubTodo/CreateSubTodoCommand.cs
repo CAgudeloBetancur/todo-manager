@@ -1,5 +1,6 @@
 ﻿using ErrorOr;
 using MediatR;
+using ToDoManager.Application.Common.Interfaces.CQRS;
 
 namespace ToDoManager.Application.Todos.SubTodos.Commands.CreateSubTodo;
 
@@ -8,4 +9,4 @@ public record CreateSubTodoCommand(
 	string Title, 
 	string Description, 
 	bool IsComplete
-	) : IRequest<ErrorOr<Unit>>;
+	) : ICommand<ErrorOr<Unit>>;
