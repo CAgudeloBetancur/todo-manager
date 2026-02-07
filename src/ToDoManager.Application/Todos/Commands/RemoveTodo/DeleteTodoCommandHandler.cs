@@ -36,10 +36,8 @@ public class DeleteTodoCommandHandler : IRequestHandler<DeleteTodoCommand, Error
 		var todo = requestResult.Value;
 
 		await _todoRepository.Remove(todo);
-		
-		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
-		
-		return EnsurePersistenceResult(persistenceResult);
+
+		return Unit.Value;
 	}
 
 	private static TodoId ToTodoId(Guid primitiveTodoId) => TodoId.Create(primitiveTodoId);
@@ -48,10 +46,5 @@ public class DeleteTodoCommandHandler : IRequestHandler<DeleteTodoCommand, Error
 	{
 		var todo = await _todoRepository.GetByIdForUserAsync(todoId, userId);
 		return todo is null ? Errors.ToDo.NotFound : todo;
-	}
-
-	private static ErrorOr<Unit> EnsurePersistenceResult(Error? persistenceResult)
-	{
-		return persistenceResult is not null ? (Error)persistenceResult : Unit.Value;
 	}
 };
