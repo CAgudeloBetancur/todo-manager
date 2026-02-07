@@ -25,7 +25,7 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
 	{
 		if (request is IQuery<TResponse>) return await next();
 
-		await _unitOfWork.BeginTransaction();
+		await _unitOfWork.BeginTransactionAsync();
 
 		try
 		{

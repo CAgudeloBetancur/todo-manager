@@ -21,7 +21,7 @@ public class UnitOfWork : IUnitOfWork
 		_logger = logger;
 	}
 
-	public async Task BeginTransaction()
+	public async Task BeginTransactionAsync()
 	{
 		_logger.LogInformation("Beginning transaction");
 		_currentTransaction = await _context.Database.BeginTransactionAsync();
