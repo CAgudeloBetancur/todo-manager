@@ -39,10 +39,8 @@ public class CreateSubTodoCommandHandler : IRequestHandler<CreateSubTodoCommand,
 		todo.AddSubTodo(request.Title, request.Description, request.IsComplete);
 
 		await _todoRepository.Update(todo);
-		
-		var persistenceResult = await _unitOfwork.SaveChangesAsync(cancellationToken);
-		
-		return EnsurePersistenceSucceeded(persistenceResult);
+
+		return Unit.Value;
 	}
 
 	private static TodoId ToTodoId(Guid todoId)
@@ -55,10 +53,5 @@ public class CreateSubTodoCommandHandler : IRequestHandler<CreateSubTodoCommand,
 		var todo = await _todoRepository.GetByIdForUserAsync(todoId, userId);
 		
 		return todo is null ? Errors.ToDo.NotFound : todo;
-	}
-
-	private static ErrorOr<Unit> EnsurePersistenceSucceeded(Error? persistenceResult)
-	{
-		return persistenceResult is not null ? (Error)persistenceResult : Unit.Value;
 	}
 }
