@@ -30,10 +30,8 @@ public class DeleteTagCommandHandler : IRequestHandler<DeleteTagCommand, ErrorOr
 		var tag = tagResult.Value;
 		
 		await _tagRepository.RemoveAsync(tag);
-
-		var persistenceResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
 		
-		return BuildFinalResultFromPersistenceResult(persistenceResult);
+		return Unit.Value;
 	}
 
 	private static TagId ToTagId(Guid primitiveTagId) => TagId.Create(primitiveTagId);
@@ -42,12 +40,5 @@ public class DeleteTagCommandHandler : IRequestHandler<DeleteTagCommand, ErrorOr
 	{
 		var tag = await _tagRepository.GetByIdAsync(tagId);
 		return tag is null ? Errors.Tag.NotFound : tag;
-	}
-
-	private static ErrorOr<Unit> BuildFinalResultFromPersistenceResult(Error? persistenceResult)
-	{
-		return persistenceResult is not null 
-			? (Error)persistenceResult 
-			: Unit.Value;
 	}
 }
