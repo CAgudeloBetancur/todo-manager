@@ -6,6 +6,7 @@ using ToDoManager.Application.Common.Interfaces.Http;
 using ToDoManager.Domain.Tags.ValueObjects;
 using ToDoManager.Domain.Todos.Entities;
 using ToDoManager.Domain.Users;
+using ToDoManager.Domain.Users.ValueObjects;
 
 namespace ToDoManager.Application.Users.Queries.GetTodosForUser;
 
@@ -69,7 +70,8 @@ public class GetTodosForUserQueryHandler : IRequestHandler<GetTodosForUserQuery,
 
 	private async Task<ErrorOr<User>> FindUserByIdWithTodos(Guid userId)
 	{
-		var userWithTodos = await _userRepository.FindByIdWithTodosAsync(userId);
+		var domainUserId = UserId.Create(userId);
+		var userWithTodos = await _userRepository.FindByIdWithTodosAsync(domainUserId);
 		return userWithTodos is null ? Errors.User.NotFound : userWithTodos;
 	}
 }
