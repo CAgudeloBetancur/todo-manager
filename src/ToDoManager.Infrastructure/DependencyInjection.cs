@@ -5,11 +5,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using ToDoManager.Application.Authentication.Common.Interfaces;
 using ToDoManager.Application.Common.Interfaces.Authentication;
 using ToDoManager.Application.Common.Interfaces.Http;
 using ToDoManager.Application.Common.Interfaces.Persistence;
 using ToDoManager.Application.Common.Interfaces.Persistence.UnitOfWork;
 using ToDoManager.Application.Common.Interfaces.Services;
+using ToDoManager.Infrastructure.Authentication.Adapters;
 using ToDoManager.Infrastructure.Authentication.Jwt;
 using ToDoManager.Infrastructure.Data.Persistence;
 using ToDoManager.Infrastructure.Data.Persistence.Repositories;
@@ -91,6 +93,9 @@ public static class DependencyInjection
 				ValidAudience = jwtSettings.Audience,
 				IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
 			});
+
+		services
+			.AddScoped<IUserManagerAdapter, UserManagerAdapter>();
 
 		return services;
 	}
