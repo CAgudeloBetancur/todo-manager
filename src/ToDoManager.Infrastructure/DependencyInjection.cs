@@ -95,7 +95,7 @@ public static class DependencyInjection
 			});
 
 		services
-			.AddScoped<IIdentityAdapter, IdentityAdapter>();
+			.AddScoped<IUserManagerAdapter, UserManagerAdapter>();
 
 		return services;
 	}

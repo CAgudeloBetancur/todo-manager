@@ -11,17 +11,16 @@ public sealed class User : AggregateRoot<UserId>
 	
 	public string FirstName { get; private set; }
 	public string LastName { get; private set; }
-	public List<Todo> Todos { get; private set; } = new();
+	public List<Todo> Todos { get; private set; }
 	
-	private User(UserId id, string displayName, Email email, string firstName, string lastName) : base(id)
-	{
-		DisplayName = displayName;
-		Email = email;
-		FirstName = firstName;
-		LastName = lastName;
-	}
-	
-	private User(UserId id, string displayName, Email email, string firstName, string lastName, List<Todo> todos) : base(id)
+	private User(
+		UserId id, 
+		string displayName, 
+		Email email, 
+		string firstName, 
+		string lastName, 
+		List<Todo> todos
+		) : base(id)
 	{
 		DisplayName = displayName;
 		Email = email;
@@ -30,19 +29,14 @@ public sealed class User : AggregateRoot<UserId>
 		Todos = todos;
 	}
 
-	public static User Create(string displayName, string email, string firstName, string lastName)
+	public static User Create(string displayName, string email, string firstName, string lastName, List<Todo>? todos = null)
 	{
-		return new (UserId.CreateUnique(), displayName, Email.Create(email), firstName, lastName);
+		return new (UserId.CreateUnique(), displayName, Email.Create(email), firstName, lastName, todos ?? new());
 	}
 	
-	public static User Create(Guid id, string displayName, string email, string firstName, string lastName)
+	public static User Create(Guid id, string displayName, string email, string firstName, string lastName, List<Todo>? todos = null)
 	{
-		return new (UserId.Create(id), displayName, Email.Create(email), firstName, lastName);
-	}
-	
-	public static User Create(Guid id, string displayName, string email, string firstName, string lastName, List<Todo> todos)
-	{
-		return new (UserId.Create(id), displayName, Email.Create(email), firstName, lastName, todos);
+		return new (UserId.Create(id), displayName, Email.Create(email), firstName, lastName, todos ?? new());
 	}
 	
 #pragma warning disable CS8618

@@ -1,28 +1,58 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using ToDoManager.Application.Authentication.Common.Interfaces;
 using ToDoManager.Application.Authentication.Common.Persistence;
 using ToDoManager.Domain.Users;
+using ToDoManager.Domain.Users.ValueObjects;
 using ToDoManager.Infrastructure.Authentication.Identity.Entities;
+using ToDoManager.Infrastructure.Data.Persistence;
 
 namespace ToDoManager.Infrastructure.Authentication.Adapters;
 
-public class IdentityAdapter : IIdentityAdapter
+public class UserManagerAdapter : IUserManagerAdapter
 {
 	private readonly UserManager<ApplicationUser> _userManager;
+	private readonly ApplicationDbContext _context;
 
-	public IdentityAdapter(UserManager<ApplicationUser> userManager)
+	public UserManagerAdapter(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
 	{
 		_userManager = userManager;
+		_context = context;
 	}
 
 	public async Task<User?> FindByEmailAsync(string email)
 	{
 		var identityUser = await _userManager.FindByEmailAsync(email);
 
-		return BuildFindByEmailResult(identityUser);
+		return BuildFindUserResult(identityUser);
 	}
 
-	private static User? BuildFindByEmailResult(ApplicationUser? identityUser)
+	public async Task<User?> FindByIdAsync(UserId id)
+	{
+		var identityUser = await _userManager.FindByIdAsync(id.Value.ToString()); 
+		
+		return BuildFindUserResult(identityUser);
+	}
+
+	public async Task<User?> FindByIdWithTodosAsync(UserId userId)
+	{ 
+		var identityUser = await _context
+			.Users
+			.Include(u => u.Todos)
+			.ThenInclude(t => t.SubTodos)
+			.FirstOrDefaultAsync(u => u.Id == userId.Value);
+		
+		return BuildFindByIdWithTodosResult(identityUser);
+	}
+	
+	private static User? BuildFindByIdWithTodosResult(ApplicationUser? identityUser)
+	{
+		return identityUser is null
+			? null
+			: BuildFindUserResult(identityUser);
+	}
+
+	private static User? BuildFindUserResult(ApplicationUser? identityUser)
 	{
 		return identityUser is null
 			? null
@@ -32,7 +62,8 @@ public class IdentityAdapter : IIdentityAdapter
 					identityUser.Email, 
 					identityUser.Email, 
 					identityUser.FirstName, 
-					identityUser.LastName
+					identityUser.LastName,
+					identityUser.Todos.ToList()
 					);
 	}
 
