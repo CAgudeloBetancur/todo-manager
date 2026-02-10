@@ -42,8 +42,8 @@ public class TagRepository : ITagRepository
 		return await _context.Tags.ToListAsync();
 	}
 
-	public async Task Update(Tag currentTag, Tag updatedTag)
+	public async Task Update(Tag tag)
 	{
-		_context.Entry(currentTag).CurrentValues.SetValues(updatedTag);
+		_context.Tags.Update(tag);
 	}
 }
