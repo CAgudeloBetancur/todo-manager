@@ -29,9 +29,9 @@ public class UpdateTagCommandHandler : IRequestHandler<UpdateTagCommand, ErrorOr
 		
 		var currentTag = tagResult.Value;
 
-		var newValues = Tag.Create(tagId, request.Name);
+		currentTag.Update(request.Name);
 		
-		await _repository.Update(currentTag, newValues);
+		await _repository.Update(currentTag);
 
 		return Unit.Value;
 	}
