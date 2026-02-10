@@ -143,14 +143,18 @@ public sealed class Todo : AggregateRoot<TodoId>
 
 		if (subTodo is null) throw new Exception("SubTodo not found");
 		
-		var subTodoChanged = 
-			subTodo.Title != title ||
-			subTodo.Description != description ||
-			subTodo.IsComplete != isComplete;
+		var subTodoChanged = SubTodoChanged(title, description, isComplete, subTodo);
 		
 		if(subTodoChanged) subTodo.Update(title, description, isComplete);
 		
 		AuditInfo.UpdateModifiedAt(DateTime.UtcNow);
+	}
+
+	private static bool SubTodoChanged(string title, string description, bool isComplete, SubTodo subTodo)
+	{
+		return subTodo.Title != title ||
+			subTodo.Description != description ||
+			subTodo.IsComplete != isComplete;
 	}
 
 	public void RemoveSubTodo(SubTodoId subTodoId)
