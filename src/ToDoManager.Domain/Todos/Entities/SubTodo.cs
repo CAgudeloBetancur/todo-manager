@@ -31,9 +31,24 @@ public sealed class SubTodo : Entity<SubTodoId>
 
 	internal void Update(string title, string description, bool isComplete)
 	{
-		Title = title;
-		Description = description;
+		UpdateTitle(title);
+		UpdateDescription(description);
+		UpdateIsComplete(isComplete);
+	}
+
+	private void UpdateIsComplete(bool isComplete)
+	{
 		IsComplete = isComplete;
+	}
+
+	private void UpdateDescription(string description)
+	{
+		Description = description;
+	}
+
+	private void UpdateTitle(string title)
+	{
+		Title = title;
 	}
 
 	internal void UpdateOrder(int order)
