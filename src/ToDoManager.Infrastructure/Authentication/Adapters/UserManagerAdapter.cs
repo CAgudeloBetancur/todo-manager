@@ -120,16 +120,36 @@ public class UserManagerAdapter : IUserManagerAdapter
 
 	public async Task<AuthenticationOperationResult> UpdateUserAsync(User user)
 	{
-		var identityUser = ToIdentityUser(user);
+		var identityUser = await _userManager.FindByIdAsync(user.Id.Value.ToString());
 		
-		var updateUserResult = await _userManager.UpdateAsync(identityUser);
+		if (identityUser is null) return BuildAuthenticationErrorResultFromIdentityUserNotFound();
 
+		if (!UserChanged(user.Email.Value, user.FirstName, user.LastName, identityUser))
+			return AuthenticationOperationResult.Success();
+		
+		identityUser.Email = user.Email.Value;
+		identityUser.UserName = user.Email.Value;
+		identityUser.FirstName = user.FirstName;
+		identityUser.LastName = user.LastName;
+			
+		var updateUserResult = await _userManager.UpdateAsync(identityUser);
+		
 		return ToOperationResult(updateUserResult);
+
+	}
+	
+	private static bool UserChanged(string newEmail, string newFirstName, string newLastName, ApplicationUser identityUser)
+	{
+		return identityUser.Email != newEmail ||
+			identityUser.FirstName != newFirstName ||
+			identityUser.LastName != newLastName;
 	}
 
 	public async Task<AuthenticationOperationResult> ChangePasswordAsync(User user, string currentPassword, string newPassword)
 	{
-		var identityUser = ToIdentityUser(user);
+		var identityUser = await _userManager.FindByIdAsync(user.Id.Value.ToString());
+		
+		if (identityUser is null) return BuildAuthenticationErrorResultFromIdentityUserNotFound();
 		
 		var changePasswordResult = await _userManager
 			.ChangePasswordAsync(identityUser, currentPassword, newPassword);
@@ -139,7 +159,9 @@ public class UserManagerAdapter : IUserManagerAdapter
 
 	public async Task<AuthenticationOperationResult> ChangeEmailAsync(User user, string newEmail)
 	{
-		var identityUser = ToIdentityUser(user);
+		var identityUser = await _userManager.FindByIdAsync(user.Id.Value.ToString());
+		
+		if (identityUser is null) return BuildAuthenticationErrorResultFromIdentityUserNotFound();
 		
 		var changeEmailAsync = await _userManager.SetEmailAsync(identityUser, newEmail); 
 		
