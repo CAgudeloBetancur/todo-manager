@@ -4,6 +4,7 @@ using ToDoManager.Application.Authentication.Common.Persistence;
 using ToDoManager.Application.Common.Errors;
 using ToDoManager.Application.Common.Interfaces.Authentication;
 using ToDoManager.Application.Common.Interfaces.Http;
+using ToDoManager.Domain.Users;
 using ToDoManager.Domain.Users.ValueObjects;
 
 namespace ToDoManager.Application.Authentication.Commands.ChangeEmail;
@@ -23,19 +24,26 @@ public class ChangeEmailCommandHandler : IRequestHandler<ChangeEmailCommand, Err
 	{
 		var userId = _userAccessor.GetId();
 
-		var user = await _userRepository.FindByIdAsync(userId);
+		var userResult = await _userRepository.FindByIdAsync(userId);
+
+		var user = EnsureUserExists(userResult);
+
+		if (user.IsError) return user.Errors;
 		
-		if (user is null)
-			return Errors.User.NotFound;
-		
-		var changeEmailResult = await _userRepository.ChangeEmailAsync(user, request.NewEmail);
+		var changeEmailResult = await _userRepository.ChangeEmailAsync(user.Value, request.NewEmail);
 		
 		if(!changeEmailResult.Succeeded)
 			return MapToValidationErrors(changeEmailResult.Errors);
 
 		return Unit.Value;
+		
 	}
-	
+
+	private ErrorOr<User> EnsureUserExists(User? userResult)
+	{
+		return userResult is null ? Errors.User.NotFound : userResult;
+	}
+
 	private static List<Error> MapToValidationErrors(IEnumerable<AuthenticationError> errors)
 	{
 		return errors
