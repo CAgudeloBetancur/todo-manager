@@ -16,7 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Authentication\Commands\" />
     <Folder Include="Authentication\Queries\" />
     <Folder Include="Common\Extensions\" />
     <Folder Include="Todos\SubTodos\Queries\" />

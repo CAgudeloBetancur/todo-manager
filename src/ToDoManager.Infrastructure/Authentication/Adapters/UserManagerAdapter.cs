@@ -13,16 +13,20 @@ public class UserManagerAdapter : IUserManagerAdapter
 {
 	private readonly UserManager<ApplicationUser> _userManager;
 	private readonly ApplicationDbContext _context;
+	private ApplicationUser? _identityUser;
 
 	public UserManagerAdapter(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
 	{
 		_userManager = userManager;
 		_context = context;
+		_identityUser = null;
 	}
 
 	public async Task<User?> FindByEmailAsync(string email)
 	{
 		var identityUser = await _userManager.FindByEmailAsync(email);
+		
+		_identityUser = identityUser;
 
 		return BuildFindUserResult(identityUser);
 	}
@@ -30,6 +34,8 @@ public class UserManagerAdapter : IUserManagerAdapter
 	public async Task<User?> FindByIdAsync(UserId id)
 	{
 		var identityUser = await _userManager.FindByIdAsync(id.Value.ToString()); 
+		
+		_identityUser = identityUser;
 		
 		return BuildFindUserResult(identityUser);
 	}
@@ -41,6 +47,8 @@ public class UserManagerAdapter : IUserManagerAdapter
 			.Include(u => u.Todos)
 			.ThenInclude(t => t.SubTodos)
 			.FirstOrDefaultAsync(u => u.Id == userId.Value);
+		
+		_identityUser = identityUser;
 		
 		return BuildFindByIdWithTodosResult(identityUser);
 	}
@@ -76,23 +84,11 @@ public class UserManagerAdapter : IUserManagerAdapter
 		return ToOperationResult(result);
 	}
 
-	private static ApplicationUser ToIdentityUser(User user)
-	{
-		return new ApplicationUser()
-		{
-			Id = user.Id.Value,
-			UserName = user.Email.Value,
-			Email = user.Email.Value,
-			FirstName = user.FirstName,
-			LastName = user.LastName,
-		};
-	}
-
 	public async Task<bool> CheckPasswordAsync(User user, string password)
 	{
-		var identityUser = await _userManager.FindByIdAsync(user.Id.Value.ToString());
-
-		return await BuildCheckPasswordResult(identityUser, password);
+		_identityUser = await EnsureValidIdentityUser(user);
+		
+		return await BuildCheckPasswordResult(_identityUser, password);
 	}
 
 	private async Task<bool> BuildCheckPasswordResult(ApplicationUser? identityUser, string password)
@@ -107,9 +103,9 @@ public class UserManagerAdapter : IUserManagerAdapter
 
 	public async Task<IList<string>> GetRolesAsync(User user)
 	{
-		var identityUser = await _userManager.FindByIdAsync(user.Id.Value.ToString());
+		_identityUser = await EnsureValidIdentityUser(user);
 
-		return await BuildGetRolesResult(identityUser);
+		return await BuildGetRolesResult(_identityUser);
 	}
 
 	private async Task<IList<string>> BuildGetRolesResult(ApplicationUser? identityUser)
@@ -121,13 +117,85 @@ public class UserManagerAdapter : IUserManagerAdapter
 
 	public async Task<AuthenticationOperationResult> AddToRoleAsync(User user, string roleName)
 	{
-		var identityUser = await _userManager.FindByEmailAsync(user.Email.Value);
+		_identityUser = await EnsureValidIdentityUser(user);
 
-		if (identityUser is null) return BuildAuthenticationErrorResultFromIdentityUserNotFound();
+		if (_identityUser is null) return BuildAuthenticationErrorResultFromIdentityUserNotFound();
 		
-		var result = await _userManager.AddToRoleAsync(identityUser,  roleName);
+		var result = await _userManager.AddToRoleAsync(_identityUser,  roleName);
 		
 		return ToOperationResult(result);
+	}
+
+	public async Task<AuthenticationOperationResult> UpdateUserAsync(User user)
+	{
+		_identityUser = await EnsureValidIdentityUser(user);
+		
+		if (_identityUser is null) return BuildAuthenticationErrorResultFromIdentityUserNotFound();
+
+		if (!UserChanged(user.Email.Value, user.FirstName, user.LastName, _identityUser))
+			return AuthenticationOperationResult.Success();
+		
+		_identityUser.Email = user.Email.Value;
+		_identityUser.UserName = user.Email.Value;
+		_identityUser.FirstName = user.FirstName;
+		_identityUser.LastName = user.LastName;
+			
+		var updateUserResult = await _userManager.UpdateAsync(_identityUser);
+		
+		return ToOperationResult(updateUserResult);
+
+	}
+	
+	private static bool UserChanged(string newEmail, string newFirstName, string newLastName, ApplicationUser identityUser)
+	{
+		return identityUser.Email != newEmail ||
+			identityUser.FirstName != newFirstName ||
+			identityUser.LastName != newLastName;
+	}
+
+	public async Task<AuthenticationOperationResult> ChangePasswordAsync(User user, string currentPassword, string newPassword)
+	{
+		_identityUser = await EnsureValidIdentityUser(user);
+		
+		if (_identityUser is null) return BuildAuthenticationErrorResultFromIdentityUserNotFound();
+		
+		var changePasswordResult = await _userManager
+			.ChangePasswordAsync(_identityUser, currentPassword, newPassword);
+		
+		return ToOperationResult(changePasswordResult);
+	}
+
+	public async Task<AuthenticationOperationResult> ChangeEmailAsync(User user, string newEmail)
+	{
+		_identityUser = await EnsureValidIdentityUser(user);
+		
+		if (_identityUser is null) return BuildAuthenticationErrorResultFromIdentityUserNotFound();
+		
+		var changeEmailAsync = await _userManager.SetEmailAsync(_identityUser, newEmail); 
+		
+		return ToOperationResult(changeEmailAsync);
+	}
+	
+	private async Task<ApplicationUser?> EnsureValidIdentityUser(User user)
+	{
+		if (_identityUser is null || user.Id.Value != _identityUser.Id)
+		{
+			return await _userManager.FindByIdAsync(user.Id.Value.ToString());
+		}
+
+		return _identityUser;
+	}
+	
+	private static ApplicationUser ToIdentityUser(User user)
+	{
+		return new ApplicationUser()
+		{
+			Id = user.Id.Value,
+			UserName = user.Email.Value,
+			Email = user.Email.Value,
+			FirstName = user.FirstName,
+			LastName = user.LastName,
+		};
 	}
 
 	private static AuthenticationOperationResult ToOperationResult(IdentityResult result)

@@ -29,6 +29,7 @@ public class GlobalExceptionHandler : IExceptionHandler
 		{
 			NpgsqlException or SocketException=> StatusCodes.Status503ServiceUnavailable,
 			ApplicationException => StatusCodes.Status400BadRequest,
+			UnauthorizedAccessException => StatusCodes.Status403Forbidden,
 			_ => StatusCodes.Status500InternalServerError
 		};
 

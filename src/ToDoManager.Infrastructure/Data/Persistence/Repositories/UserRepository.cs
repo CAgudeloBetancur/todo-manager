@@ -49,4 +49,19 @@ public class UserRepository : IUserRepository
 	{
 		return await _userManagerAdapter.AddToRoleAsync(user, roleName);
 	}
+
+	public async Task<AuthenticationOperationResult> UpdateUserAsync(User user)
+	{
+		return await _userManagerAdapter.UpdateUserAsync(user);
+	}
+
+	public async Task<AuthenticationOperationResult> ChangePasswordAsync(User user, string currentPassword, string newPassword)
+	{
+		return await _userManagerAdapter.ChangePasswordAsync(user, currentPassword, newPassword);
+	}
+
+	public async Task<AuthenticationOperationResult> ChangeEmailAsync(User user, string newEmail)
+	{
+		return await _userManagerAdapter.ChangeEmailAsync(user, newEmail);
+	}
 }
