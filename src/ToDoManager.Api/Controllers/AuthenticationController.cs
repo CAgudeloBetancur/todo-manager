@@ -2,7 +2,10 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ToDoManager.Application.Authentication.Commands.ChangeEmail;
+using ToDoManager.Application.Authentication.Commands.ChangePassword;
 using ToDoManager.Application.Authentication.Commands.Register;
+using ToDoManager.Application.Authentication.Commands.UpdateUser;
 using ToDoManager.Application.Authentication.Queries.Login;
 using ToDoManager.Contracts.Authentication;
 
@@ -36,6 +39,7 @@ public class AuthenticationController : ApiController
 	}
 
 	[HttpPost]
+	[Authorize]
 	public async Task<IActionResult> Login([FromBody] LoginRequest request)
 	{
 		var authResult = await _sender
@@ -48,5 +52,46 @@ public class AuthenticationController : ApiController
 				result => Ok(result),
 				errors => Problem(errors)
 				);
+	}
+
+	[HttpPut]
+	[Authorize]
+	public async Task<IActionResult> Update([FromBody] UpdateUserRequest request)
+	{
+		var authResult = await _sender
+			.Send(new UpdateUserCommand(request.Email, request.FirstName, request.LastName));
+
+		return authResult
+			.Match(
+				_ => NoContent(),
+				errors => Problem(errors)
+				);
+	}
+
+	[HttpPatch]
+	[Authorize]
+	public async Task<IActionResult> ChangeEmail([FromBody] ChangeEmailRequest request)
+	{
+		var authResult = await _sender.Send(new ChangeEmailCommand(request.Email));
+
+		return authResult
+			.Match(
+				_ => NoContent(),
+				errors => Problem(errors)
+				);
+	}
+	
+	[HttpPatch]
+	[Authorize]
+	public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+	{
+		var authResult = await _sender
+			.Send(new ChangePasswordCommand(request.CurrentPassword, request.NewPassword));
+
+		return authResult
+			.Match(
+				_ => NoContent(),
+				errors => Problem(errors)
+			);
 	}
 }

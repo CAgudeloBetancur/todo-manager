@@ -5,6 +5,7 @@ using ToDoManager.Application.Authentication.Common.Persistence;
 using ToDoManager.Application.Common.Behaviors;
 using ToDoManager.Application.Common.Errors;
 using ToDoManager.Application.Common.Interfaces.Authentication;
+using ToDoManager.Application.Common.Interfaces.Http;
 using ToDoManager.Domain.Users;
 using ToDoManager.Domain.Users.ValueObjects;
 
@@ -13,10 +14,12 @@ namespace ToDoManager.Application.Authentication.Commands.UpdateUser;
 public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, ErrorOr<Unit>>
 {
 	private readonly IUserRepository _userRepository;
+	private readonly IUserAccessor _userAccessor;
 
-	public UpdateUserCommandHandler(IUserRepository userRepository)
+	public UpdateUserCommandHandler(IUserRepository userRepository, IUserAccessor userAccessor)
 	{
 		_userRepository = userRepository;
+		_userAccessor = userAccessor;
 	}
 
 	public async Task<ErrorOr<Unit>> Handle(
@@ -24,13 +27,15 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Error
 		CancellationToken cancellationToken
 		)
 	{
-		var userId = UserId.Create(request.UserId);
+		var userId = _userAccessor.GetId();
 		
 		var userResult = await _userRepository.FindByIdAsync(userId);
 
 		var user = EnsureUserExists(userResult);
 
 		if (user.IsError) return user.Errors;
+		
+		user.Value.Update(request.Email, request.Email, request.FirstName, request.LastName);
 		
 		var updateUserResult = await _userRepository.UpdateUserAsync(user.Value);
 		
