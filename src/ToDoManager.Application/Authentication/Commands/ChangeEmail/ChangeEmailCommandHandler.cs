@@ -2,6 +2,7 @@
 using MediatR;
 using ToDoManager.Application.Authentication.Common.Persistence;
 using ToDoManager.Application.Common.Interfaces.Authentication;
+using ToDoManager.Application.Common.Interfaces.Http;
 using ToDoManager.Domain.Users.ValueObjects;
 
 namespace ToDoManager.Application.Authentication.Commands.ChangeEmail;
@@ -9,15 +10,17 @@ namespace ToDoManager.Application.Authentication.Commands.ChangeEmail;
 public class ChangeEmailCommandHandler : IRequestHandler<ChangeEmailCommand, ErrorOr<Unit>>
 {
 	private readonly IUserRepository _userRepository;
+	private readonly IUserAccessor _userAccessor;
 
-	public ChangeEmailCommandHandler(IUserRepository userRepository)
+	public ChangeEmailCommandHandler(IUserRepository userRepository, IUserAccessor userAccessor)
 	{
 		_userRepository = userRepository;
+		_userAccessor = userAccessor;
 	}
 
 	public async Task<ErrorOr<Unit>> Handle(ChangeEmailCommand request, CancellationToken cancellationToken)
 	{
-		var userId = ToUserId(request.UserId);
+		var userId = _userAccessor.GetId();
 		
 		var changeEmailResult = await _userRepository.ChangeEmailAsync(userId, request.NewEmail);
 		
@@ -25,11 +28,6 @@ public class ChangeEmailCommandHandler : IRequestHandler<ChangeEmailCommand, Err
 			return MapToValidationErrors(changeEmailResult.Errors);
 
 		return Unit.Value;
-	}
-
-	private static UserId ToUserId(Guid requestUserId)
-	{
-		return UserId.Create(requestUserId);
 	}
 	
 	private static List<Error> MapToValidationErrors(IEnumerable<AuthenticationError> errors)
