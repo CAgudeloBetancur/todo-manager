@@ -145,9 +145,9 @@ public class UserManagerAdapter : IUserManagerAdapter
 			identityUser.LastName != newLastName;
 	}
 
-	public async Task<AuthenticationOperationResult> ChangePasswordAsync(User user, string currentPassword, string newPassword)
+	public async Task<AuthenticationOperationResult> ChangePasswordAsync(UserId userId, string currentPassword, string newPassword)
 	{
-		var identityUser = await _userManager.FindByIdAsync(user.Id.Value.ToString());
+		var identityUser = await _userManager.FindByIdAsync(userId.Value.ToString());
 		
 		if (identityUser is null) return BuildAuthenticationErrorResultFromIdentityUserNotFound();
 		
@@ -157,9 +157,9 @@ public class UserManagerAdapter : IUserManagerAdapter
 		return ToOperationResult(changePasswordResult);
 	}
 
-	public async Task<AuthenticationOperationResult> ChangeEmailAsync(User user, string newEmail)
+	public async Task<AuthenticationOperationResult> ChangeEmailAsync(UserId userId, string newEmail)
 	{
-		var identityUser = await _userManager.FindByIdAsync(user.Id.Value.ToString());
+		var identityUser = await _userManager.FindByIdAsync(userId.Value.ToString());
 		
 		if (identityUser is null) return BuildAuthenticationErrorResultFromIdentityUserNotFound();
 		
