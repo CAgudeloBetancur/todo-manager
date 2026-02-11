@@ -43,6 +43,7 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
 
 					if (response.IsError)
 					{
+						logger.LogError("Error in transaction for {Request}", typeof(TRequest).Name);
 						await unitOfWork.RollbackAsync();
 						return response;
 					} 
@@ -62,5 +63,5 @@ public class TransactionBehavior<TRequest, TResponse> : IPipelineBehavior<TReque
 			verifySucceeded: null,
 			cancellationToken: cancellationToken
 			);
-	}	
+	}	 
 }
