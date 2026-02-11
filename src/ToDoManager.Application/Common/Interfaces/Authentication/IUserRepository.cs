@@ -14,6 +14,6 @@ public interface IUserRepository
 	Task<IList<string>> GetRolesAsync(User user);
 	Task<AuthenticationOperationResult> AddToRoleAsync(User user, string roleName);
 	Task<AuthenticationOperationResult> UpdateUserAsync(User user);
-	Task<AuthenticationOperationResult> ChangePasswordAsync(User user, string currentPassword, string newPassword);
-	Task<AuthenticationOperationResult> ChangeEmailAsync(User user, string newEmail);
+	Task<AuthenticationOperationResult> ChangePasswordAsync(UserId userId, string currentPassword, string newPassword);
+	Task<AuthenticationOperationResult> ChangeEmailAsync(UserId userId, string newEmail);
 }
