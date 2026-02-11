@@ -1,6 +1,7 @@
 ﻿using ErrorOr;
 using MediatR;
 using ToDoManager.Application.Authentication.Common.Persistence;
+using ToDoManager.Application.Common.Errors;
 using ToDoManager.Application.Common.Interfaces.Authentication;
 using ToDoManager.Application.Common.Interfaces.Http;
 using ToDoManager.Domain.Users.ValueObjects;
@@ -21,8 +22,13 @@ public class ChangeEmailCommandHandler : IRequestHandler<ChangeEmailCommand, Err
 	public async Task<ErrorOr<Unit>> Handle(ChangeEmailCommand request, CancellationToken cancellationToken)
 	{
 		var userId = _userAccessor.GetId();
+
+		var user = await _userRepository.FindByIdAsync(userId);
 		
-		var changeEmailResult = await _userRepository.ChangeEmailAsync(userId, request.NewEmail);
+		if (user is null)
+			return Errors.User.NotFound;
+		
+		var changeEmailResult = await _userRepository.ChangeEmailAsync(user, request.NewEmail);
 		
 		if(!changeEmailResult.Succeeded)
 			return MapToValidationErrors(changeEmailResult.Errors);
