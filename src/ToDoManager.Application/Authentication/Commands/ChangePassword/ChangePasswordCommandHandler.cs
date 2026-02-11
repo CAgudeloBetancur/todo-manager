@@ -4,6 +4,7 @@ using ToDoManager.Application.Authentication.Common.Persistence;
 using ToDoManager.Application.Common.Errors;
 using ToDoManager.Application.Common.Interfaces.Authentication;
 using ToDoManager.Application.Common.Interfaces.Http;
+using ToDoManager.Domain.Users;
 
 namespace ToDoManager.Application.Authentication.Commands.ChangePassword;
 
@@ -22,20 +23,26 @@ public class ChangePasswordCommandHandler : IRequestHandler<ChangePasswordComman
 	{
 		var userId = _userAccessor.GetId();
 
-		var user = await _userRepository.FindByIdAsync(userId);
+		var userResult = await _userRepository.FindByIdAsync(userId);
 
-		if (user is null)
-			return Errors.User.NotFound;
+		var user = EnsureUserExist(userResult);
+
+		if (user.IsError) return user.Errors;
 		
 		var changePasswordResult = await _userRepository
-			.ChangePasswordAsync(user, request.CurrentPassword, request.NewPassword);
+			.ChangePasswordAsync(user.Value, request.CurrentPassword, request.NewPassword);
 
 		if (!changePasswordResult.Succeeded)
 			return MapToValidationErrors(changePasswordResult.Errors);
 		
 		return Unit.Value;
 	}
-	
+
+	private ErrorOr<User> EnsureUserExist(User? userResult)
+	{
+		return userResult is null ? Errors.User.NotFound : userResult;
+	}
+
 	private static List<Error> MapToValidationErrors(IEnumerable<AuthenticationError> errors)
 	{
 		return errors
