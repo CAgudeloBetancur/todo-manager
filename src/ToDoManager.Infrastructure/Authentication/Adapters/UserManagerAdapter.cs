@@ -76,18 +76,6 @@ public class UserManagerAdapter : IUserManagerAdapter
 		return ToOperationResult(result);
 	}
 
-	private static ApplicationUser ToIdentityUser(User user)
-	{
-		return new ApplicationUser()
-		{
-			Id = user.Id.Value,
-			UserName = user.Email.Value,
-			Email = user.Email.Value,
-			FirstName = user.FirstName,
-			LastName = user.LastName,
-		};
-	}
-
 	public async Task<bool> CheckPasswordAsync(User user, string password)
 	{
 		var identityUser = await _userManager.FindByIdAsync(user.Id.Value.ToString());
@@ -128,6 +116,46 @@ public class UserManagerAdapter : IUserManagerAdapter
 		var result = await _userManager.AddToRoleAsync(identityUser,  roleName);
 		
 		return ToOperationResult(result);
+	}
+
+	public async Task<AuthenticationOperationResult> UpdateUserAsync(User user)
+	{
+		var identityUser = ToIdentityUser(user);
+		
+		var updateUserResult = await _userManager.UpdateAsync(identityUser);
+
+		return ToOperationResult(updateUserResult);
+	}
+
+	public async Task<AuthenticationOperationResult> ChangePasswordAsync(User user, string currentPassword, string newPassword)
+	{
+		var identityUser = ToIdentityUser(user);
+		
+		var changePasswordResult = await _userManager
+			.ChangePasswordAsync(identityUser, currentPassword, newPassword);
+		
+		return ToOperationResult(changePasswordResult);
+	}
+
+	public async Task<AuthenticationOperationResult> ChangeEmailAsync(User user, string newEmail)
+	{
+		var identityUser = ToIdentityUser(user);
+		
+		var changeEmailAsync = await _userManager.SetEmailAsync(identityUser, newEmail); 
+		
+		return ToOperationResult(changeEmailAsync);
+	}
+	
+	private static ApplicationUser ToIdentityUser(User user)
+	{
+		return new ApplicationUser()
+		{
+			Id = user.Id.Value,
+			UserName = user.Email.Value,
+			Email = user.Email.Value,
+			FirstName = user.FirstName,
+			LastName = user.LastName,
+		};
 	}
 
 	private static AuthenticationOperationResult ToOperationResult(IdentityResult result)
