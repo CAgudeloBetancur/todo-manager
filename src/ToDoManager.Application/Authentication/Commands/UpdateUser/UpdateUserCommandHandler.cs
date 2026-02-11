@@ -44,18 +44,6 @@ public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, Error
 	{
 		return userResult is null ? Errors.User.NotFound : userResult;
 	}
-
-	private User CreateUserFromRequest(
-		Guid requestUserId,
-		string requestDisplayName, 
-		string requestEmail, 
-		string requestFirstName, 
-		string requestLastName
-		)
-	{
-		return User
-			.Create(requestUserId, requestDisplayName, requestEmail, requestFirstName, requestLastName);
-	}
 	
 	private static List<Error> MapToValidationErrors(IEnumerable<AuthenticationError> errors)
 	{
