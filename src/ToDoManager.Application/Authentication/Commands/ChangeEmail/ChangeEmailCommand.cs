@@ -3,4 +3,4 @@ using MediatR;
 
 namespace ToDoManager.Application.Authentication.Commands.ChangeEmail;
 
-public record class ChangeEmailCommand(Guid UserId, string NewEmail) : IRequest<ErrorOr<Unit>>;
+public record class ChangeEmailCommand(string NewEmail) : IRequest<ErrorOr<Unit>>;
