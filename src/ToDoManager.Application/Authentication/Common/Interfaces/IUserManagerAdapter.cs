@@ -13,4 +13,7 @@ public interface IUserManagerAdapter
 	Task<bool> CheckPasswordAsync(User user, string password);
 	Task<IList<string>> GetRolesAsync(User user);
 	Task<AuthenticationOperationResult> AddToRoleAsync(User user, string roleName);
+	Task<AuthenticationOperationResult> UpdateUserAsync(User user);
+	Task<AuthenticationOperationResult> ChangePasswordAsync(User user, string currentPassword, string newPassword);
+	Task<AuthenticationOperationResult> ChangeEmailAsync(User user, string newEmail);
 }
