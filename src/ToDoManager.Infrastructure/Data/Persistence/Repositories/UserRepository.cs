@@ -55,13 +55,13 @@ public class UserRepository : IUserRepository
 		return await _userManagerAdapter.UpdateUserAsync(user);
 	}
 
-	public async Task<AuthenticationOperationResult> ChangePasswordAsync(User user, string currentPassword, string newPassword)
+	public async Task<AuthenticationOperationResult> ChangePasswordAsync(UserId userId, string currentPassword, string newPassword)
 	{
-		return await _userManagerAdapter.ChangePasswordAsync(user, currentPassword, newPassword);
+		return await _userManagerAdapter.ChangePasswordAsync(userId, currentPassword, newPassword);
 	}
 
-	public async Task<AuthenticationOperationResult> ChangeEmailAsync(User user, string newEmail)
+	public async Task<AuthenticationOperationResult> ChangeEmailAsync(UserId userId, string newEmail)
 	{
-		return await _userManagerAdapter.ChangeEmailAsync(user, newEmail);
+		return await _userManagerAdapter.ChangeEmailAsync(userId, newEmail);
 	}
 }
