@@ -29,14 +29,68 @@ public sealed class User : AggregateRoot<UserId>
 		Todos = todos;
 	}
 
-	public static User Create(string displayName, string email, string firstName, string lastName, List<Todo>? todos = null)
+	public static User Create(
+		string displayName, 
+		string email, 
+		string firstName, 
+		string lastName, 
+		List<Todo>? todos = null
+		)
 	{
-		return new (UserId.CreateUnique(), displayName, Email.Create(email), firstName, lastName, todos ?? new());
+		return new (
+			UserId.CreateUnique(), 
+			displayName, 
+			Email.Create(email), 
+			firstName, 
+			lastName, 
+			todos ?? new());
 	}
 	
-	public static User Create(Guid id, string displayName, string email, string firstName, string lastName, List<Todo>? todos = null)
+	public static User Create(
+		Guid id, 
+		string displayName, 
+		string email,
+		string firstName, 
+		string lastName, 
+		List<Todo>? todos = null
+		)
 	{
-		return new (UserId.Create(id), displayName, Email.Create(email), firstName, lastName, todos ?? new());
+		return new (
+			UserId.Create(id), 
+			displayName, 
+			Email.Create(email), 
+			firstName, 
+			lastName, 
+			todos ?? new()
+			);
+	}
+
+	public void Update(string displayName, string email, string firstName, string lastName)
+	{
+		UpdateDisplayName(displayName);
+		ChangeEmail(email);
+		UpdateFirstName(firstName);
+		UpdateLastName(lastName);
+	}
+
+	private void UpdateDisplayName(string displayName)
+	{
+		DisplayName = displayName;
+	}
+
+	private void UpdateFirstName(string firstName)
+	{
+		FirstName = firstName;
+	}
+
+	private void UpdateLastName(string lastName)
+	{
+		LastName = lastName;
+	}
+
+	public void ChangeEmail(string email)
+	{
+		Email = Email.Create(email);
 	}
 	
 #pragma warning disable CS8618
