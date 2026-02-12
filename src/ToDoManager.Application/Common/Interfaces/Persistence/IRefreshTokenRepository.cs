@@ -5,7 +5,7 @@ namespace ToDoManager.Application.Common.Interfaces.Persistence;
 public interface IRefreshTokenRepository
 {
 	Task<RefreshTokenDto?> GetByTokenAsync(string token);
-	Task AddAsync(RefreshTokenDto refreshToken);
+	Task AddAsync(RefreshTokenDto refreshTokenDto);
 	Task InvalidateAsync(string token);
 	Task <IEnumerable<RefreshTokenDto>> GetByUserIdAsync(Guid userId);
 }
