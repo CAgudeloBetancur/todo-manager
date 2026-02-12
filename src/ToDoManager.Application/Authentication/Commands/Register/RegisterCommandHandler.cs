@@ -13,12 +13,10 @@ namespace ToDoManager.Application.Authentication.Commands.Register;
 public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<Unit>>
 {
 	private readonly IUserRepository _userRepository;
-	private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
 	public RegisterCommandHandler(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator)
 	{
 		_userRepository = userRepository;
-		_jwtTokenGenerator = jwtTokenGenerator;
 	}
 
 	public async Task< ErrorOr<Unit> > Handle(RegisterCommand request, CancellationToken cancellationToken)
