@@ -11,4 +11,4 @@ public record RegisterCommand(
 	string LastName, 
 	string Email, 
 	string Password
-	) : ICommand< ErrorOr<AuthenticationResult> >, IAllowAnonymous;
+	) : ICommand< ErrorOr<Unit> >, IAllowAnonymous;
