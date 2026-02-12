@@ -33,7 +33,7 @@ public class AuthenticationController : ApiController
 
 		return authResult
 			.Match(
-				result => Ok(result),
+				_ => NoContent(),
 				errors => Problem(errors)
 				);
 	}
