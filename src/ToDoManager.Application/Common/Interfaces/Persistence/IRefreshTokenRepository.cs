@@ -8,4 +8,5 @@ public interface IRefreshTokenRepository
 	Task AddAsync(RefreshTokenDto refreshTokenDto);
 	Task InvalidateAsync(string token);
 	Task <IEnumerable<RefreshTokenDto>> GetByUserIdAsync(Guid userId);
+	void InvalidateAsync(IEnumerable<RefreshTokenDto> refreshTokenDtos);
 }

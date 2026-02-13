@@ -50,7 +50,19 @@ public class RefreshTokenRepository : IRefreshTokenRepository
 			.Select(rt => ToRefreshTokenDto(rt))
 			.ToListAsync();
 	}
-	
+
+	public void InvalidateAsync(IEnumerable<RefreshTokenDto> refreshTokenDtos)
+	{ 
+		_context
+			.RefreshTokens
+			.UpdateRange(ToRefreshTokenEnumerable(refreshTokenDtos));
+	}
+
+	private static IEnumerable<RefreshToken> ToRefreshTokenEnumerable(IEnumerable<RefreshTokenDto> refreshTokenDtos)
+	{
+		return refreshTokenDtos.Select(rt => ToRefreshToken(rt)); 
+	}
+
 	private static RefreshTokenDto ToRefreshTokenDto(RefreshToken refreshToken)
 	{
 		return new RefreshTokenDto(
