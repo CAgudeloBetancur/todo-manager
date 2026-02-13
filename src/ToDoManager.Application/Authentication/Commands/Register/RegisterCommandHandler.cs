@@ -10,18 +10,16 @@ using ToDoManager.Domain.Users.ValueObjects;
 
 namespace ToDoManager.Application.Authentication.Commands.Register;
 
-public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<AuthenticationResult>>
+public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<Unit>>
 {
 	private readonly IUserRepository _userRepository;
-	private readonly IJwtTokenGenerator _jwtTokenGenerator;
 
 	public RegisterCommandHandler(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator)
 	{
 		_userRepository = userRepository;
-		_jwtTokenGenerator = jwtTokenGenerator;
 	}
 
-	public async Task< ErrorOr<AuthenticationResult> > Handle(RegisterCommand request, CancellationToken cancellationToken)
+	public async Task< ErrorOr<Unit> > Handle(RegisterCommand request, CancellationToken cancellationToken)
 	{
 		if (await EmailExistsAsync(request.Email)) 
 			return Errors.User.DuplicatedEmail;
@@ -29,26 +27,16 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<A
 		var user = CreateUserFromRequest(request.Email, request.Email, request.FirstName, request.LastName);
 
 		var persistenceResult = await PersistUserAsync(user, request.Password);
+		
 		if(!persistenceResult.Succeeded) 
 			return MapToValidationErrors(persistenceResult.Errors);
 
 		var assignToRoleResult = await AssignDefaultRole(user);
+		
 		if(!assignToRoleResult.Succeeded)
 			return MapToValidationErrors(assignToRoleResult.Errors);
-
-		var token = GenerateToken(user);
 		
-		return MapToResult(user, token);
-	}
-
-	private static AuthenticationResult MapToResult(User user, string token)
-	{
-		return new AuthenticationResult(user, token);
-	}
-
-	private string GenerateToken(User user)
-	{
-		return _jwtTokenGenerator.GenerateToken(user, new List<string> {"User"});
+		return Unit.Value;
 	}
 
 	private async Task<AuthenticationOperationResult> AssignDefaultRole(User user)
