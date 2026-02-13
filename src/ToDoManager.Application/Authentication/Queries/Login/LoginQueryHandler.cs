@@ -50,7 +50,7 @@ public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<Authenticat
 		
 		await _refreshTokenRepository.AddAsync(refreshTokenDto);
 
-		return new AuthenticationResult(user, jwt, refreshTokenDto.Token);
+		return new AuthenticationResult(jwt, refreshTokenDto.Token);
 	}
 
 	private RefreshTokenDto ToRefreshTokenDto(Guid userId)

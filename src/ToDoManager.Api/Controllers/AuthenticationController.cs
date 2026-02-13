@@ -1,13 +1,18 @@
-﻿using Asp.Versioning;
+﻿using System.Text.RegularExpressions;
+using Asp.Versioning;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using ToDoManager.Application.Authentication.Commands.ChangeEmail;
 using ToDoManager.Application.Authentication.Commands.ChangePassword;
+using ToDoManager.Application.Authentication.Commands.Refresh;
 using ToDoManager.Application.Authentication.Commands.Register;
 using ToDoManager.Application.Authentication.Commands.UpdateUser;
 using ToDoManager.Application.Authentication.Queries.Login;
 using ToDoManager.Contracts.Authentication;
+using LoginRequest = ToDoManager.Contracts.Authentication.LoginRequest;
+using RegisterRequest = ToDoManager.Contracts.Authentication.RegisterRequest;
 
 namespace ToDoManager.Api.Controllers;
 
@@ -93,5 +98,15 @@ public class AuthenticationController : ApiController
 				_ => NoContent(),
 				errors => Problem(errors)
 			);
+	}
+
+	[HttpPost]
+	public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request)
+	{
+		var refreshResult = await _sender.Send(new RefreshCommand(request.RefreshToken));
+
+		return refreshResult.Match(
+			result => Ok(result),
+			errors => Problem(errors));
 	}
 }

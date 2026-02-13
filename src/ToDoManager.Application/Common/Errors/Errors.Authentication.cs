@@ -17,5 +17,8 @@ public static partial class Errors
 		
 		public static Error ForbiddenAccess =>
 			Error.Unauthorized("Auth.ForbiddenAccess", "You do not have permission to view other users' todos.");
+		
+		public static Error InvalidRefreshToken =>
+			Error.Unauthorized("Auth.InvalidRefreshToken", "Refresh token is revoked or expired");
 	}
 }
