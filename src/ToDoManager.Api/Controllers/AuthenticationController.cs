@@ -102,6 +102,7 @@ public class AuthenticationController : ApiController
 	}
 
 	[HttpPost]
+	[AllowAnonymous]
 	public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request)
 	{
 		var refreshResult = await _sender.Send(new RefreshCommand(request.RefreshToken));
