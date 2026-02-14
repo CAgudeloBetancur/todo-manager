@@ -58,16 +58,16 @@ public class RefreshCommandHandler : IRequestHandler<RefreshCommand, ErrorOr<Aut
 	private async Task<ErrorOr<RefreshTokenDto>> EnsureRefreshTokenExists(string requestRefreshToken)
 	{
 		var refreshToken = await _refreshTokenRepository.GetByTokenAsync(requestRefreshToken);
-		
-		return !RefreshTokenIsValid(refreshToken)
-			? Errors.Authentication.InvalidRefreshToken
-			: refreshToken;
+
+		return RefreshTokenIsValid(refreshToken)
+			? refreshToken
+			: Errors.Authentication.InvalidRefreshToken;
 	}
 
 	private bool RefreshTokenIsValid(RefreshTokenDto? refreshToken)
 	{
 		return refreshToken is not null 
-			&& !refreshToken.IsRevoked 
+			&& !refreshToken.IsRevoked
 			&& refreshToken.ExpiresAt < _dateTimeProvider.UtcNow;
 	}
 }
