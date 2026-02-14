@@ -68,6 +68,6 @@ public class RefreshCommandHandler : IRequestHandler<RefreshCommand, ErrorOr<Aut
 	{
 		return refreshToken is not null 
 			&& !refreshToken.IsRevoked
-			&& refreshToken.ExpiresAt < _dateTimeProvider.UtcNow;
+			&& refreshToken.ExpiresAt > _dateTimeProvider.UtcNow;
 	}
 }
