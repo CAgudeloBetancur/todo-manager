@@ -61,6 +61,7 @@ public static class DependencyInjection
 		services.AddScoped<ITagRepository, TagRepository>();
 		services.AddScoped<ITodoRepository, TodoRepository>();
 		services.AddScoped<IUserRepository, UserRepository>();
+		services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
 		return services;
 	}
@@ -91,6 +92,7 @@ public static class DependencyInjection
 				ValidateIssuerSigningKey = true,
 				ValidIssuer = jwtSettings.Issuer,
 				ValidAudience = jwtSettings.Audience,
+				ClockSkew = TimeSpan.Zero,
 				IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
 			});
 

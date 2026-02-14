@@ -7,4 +7,4 @@ using ToDoManager.Application.Common.Interfaces.CQRS;
 namespace ToDoManager.Application.Authentication.Queries.Login;
 
 public record LoginQuery(string Email, string Password) 
-	: IQuery< ErrorOr<AuthenticationResult> >, IAllowAnonymous;
+	: ICommand< ErrorOr<AuthenticationResult> >, IAllowAnonymous;
