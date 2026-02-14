@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using ToDoManager.Application.Authentication.Commands.ChangeEmail;
 using ToDoManager.Application.Authentication.Commands.ChangePassword;
+using ToDoManager.Application.Authentication.Commands.Logout;
 using ToDoManager.Application.Authentication.Commands.Refresh;
 using ToDoManager.Application.Authentication.Commands.Register;
 using ToDoManager.Application.Authentication.Commands.UpdateUser;
@@ -108,5 +109,17 @@ public class AuthenticationController : ApiController
 		return refreshResult.Match(
 			result => Ok(result),
 			errors => Problem(errors));
+	}
+
+	[HttpPost]
+	public async Task<IActionResult> Logout([FromBody] LogoutRequest request)
+	{
+		var logoutResult = await _sender.Send(new LogoutCommand(request.RefreshToken));
+
+		return logoutResult
+			.Match(
+				_ => Ok(new {message = "Session closed with success."}),
+				errors => Problem(errors)
+				);
 	}
 }
