@@ -64,4 +64,14 @@ public class UserRepository : IUserRepository
 	{
 		return await _userManagerAdapter.ChangeEmailAsync(user, newEmail);
 	}
+
+	public async Task<string> GeneratePasswordResetTokenAsync(User user)
+	{
+		return await _userManagerAdapter.GeneratePasswordResetTokenAsync(user);
+	}
+
+	public Task<AuthenticationOperationResult> ResetPasswordAsync(User user, string token, string newPassword)
+	{
+		return _userManagerAdapter.ResetPasswordAsync(user, token, newPassword);
+	}
 }
