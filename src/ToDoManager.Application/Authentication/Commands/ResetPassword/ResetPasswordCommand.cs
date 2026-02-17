@@ -1,6 +1,6 @@
 ﻿using ErrorOr;
-using MediatR;
 using ToDoManager.Application.Authentication.Common;
+using ToDoManager.Application.Common.Interfaces.CQRS;
 
 namespace ToDoManager.Application.Authentication.Commands.ResetPassword;
 
@@ -8,4 +8,4 @@ public record ResetPasswordCommand(
     string Email,
     string ResetToken,
     string NewPassword
-    ) : IRequest<ErrorOr<AuthenticationResult>>;
+    ) : ICommand<ErrorOr<AuthenticationResult>>;
