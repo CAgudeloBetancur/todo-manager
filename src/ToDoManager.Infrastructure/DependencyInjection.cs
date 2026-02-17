@@ -31,6 +31,7 @@ public static class DependencyInjection
 			.AddAuth(configuration)
 			.AddPersistence(configuration)
 			.AddSingleton<IDateTimeProvider, DateTimeProvider>()
+			.AddScoped<IEmailService, ConsoleEmailService>()
 			.AddScoped<IUserAccessor, UserAccessor>();
 		
 		return services;
