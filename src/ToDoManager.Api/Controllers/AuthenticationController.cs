@@ -6,14 +6,18 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using ToDoManager.Application.Authentication.Commands.ChangeEmail;
 using ToDoManager.Application.Authentication.Commands.ChangePassword;
+using ToDoManager.Application.Authentication.Commands.ForgotPassword;
 using ToDoManager.Application.Authentication.Commands.Logout;
 using ToDoManager.Application.Authentication.Commands.Refresh;
 using ToDoManager.Application.Authentication.Commands.Register;
+using ToDoManager.Application.Authentication.Commands.ResetPassword;
 using ToDoManager.Application.Authentication.Commands.UpdateUser;
 using ToDoManager.Application.Authentication.Queries.Login;
 using ToDoManager.Contracts.Authentication;
+using ForgotPasswordRequest = ToDoManager.Contracts.Authentication.ForgotPasswordRequest;
 using LoginRequest = ToDoManager.Contracts.Authentication.LoginRequest;
 using RegisterRequest = ToDoManager.Contracts.Authentication.RegisterRequest;
+using ResetPasswordRequest = ToDoManager.Contracts.Authentication.ResetPasswordRequest;
 
 namespace ToDoManager.Api.Controllers;
 
@@ -122,5 +126,29 @@ public class AuthenticationController : ApiController
 				_ => Ok(new {message = "Session closed with success."}),
 				errors => Problem(errors)
 				);
+	}
+
+	[HttpPost]
+	[AllowAnonymous]
+	public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request)
+	{
+		var result = await _sender.Send(new ForgotPasswordCommand(request.Email));
+
+		return result.Match(
+			_ => Ok(new { message = "If the email exists, a reset link has been sent." }),
+			errors => Problem(errors));
+	}
+
+	[HttpPost]
+	[AllowAnonymous]
+	public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+	{
+		var result = await _sender
+			.Send(new ResetPasswordCommand(request.Email, request.ResetToken, request.NewPassword)
+			);
+
+		return result.Match(
+			_ => NoContent(),
+			errors => Problem(errors));
 	}
 }

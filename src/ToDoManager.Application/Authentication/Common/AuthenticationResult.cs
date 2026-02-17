@@ -1,8 +1,3 @@
-﻿using ToDoManager.Domain.Users;
+﻿namespace ToDoManager.Application.Authentication.Common;
 
-namespace ToDoManager.Application.Authentication.Common;
-
-public record AuthenticationResult(
-	string Token,
-	string RefreshToken
-	);
+public record class AuthenticationResult(string Jwt, string RefreshToken);

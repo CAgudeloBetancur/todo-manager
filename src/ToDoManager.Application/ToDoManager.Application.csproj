@@ -16,6 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Authentication\Commands\ForgotPassword\" />
+    <Folder Include="Authentication\Commands\ResetPassword\" />
     <Folder Include="Authentication\Queries\" />
     <Folder Include="Common\Extensions\" />
     <Folder Include="Todos\SubTodos\Queries\" />

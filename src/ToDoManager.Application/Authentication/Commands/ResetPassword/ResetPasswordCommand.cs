@@ -5,11 +5,10 @@ using ToDoManager.Application.Authentication.Common.Interfaces;
 using ToDoManager.Application.Common.Interfaces.CQRS;
 using Unit = MediatR.Unit;
 
-namespace ToDoManager.Application.Authentication.Commands.Register;
+namespace ToDoManager.Application.Authentication.Commands.ResetPassword;
 
-public record RegisterCommand(
-	string FirstName, 
-	string LastName, 
-	string Email, 
-	string Password
-	) : ICommand< ErrorOr<Unit> >, IAllowAnonymous;
+public record ResetPasswordCommand(
+    string Email,
+    string ResetToken,
+    string NewPassword
+    ) : ICommand<ErrorOr<Unit>>, IAllowAnonymous;

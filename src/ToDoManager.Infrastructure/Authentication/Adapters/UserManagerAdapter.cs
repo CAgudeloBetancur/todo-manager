@@ -175,7 +175,22 @@ public class UserManagerAdapter : IUserManagerAdapter
 		
 		return ToOperationResult(changeEmailAsync);
 	}
-	
+
+	public async Task<string> GeneratePasswordResetTokenAsync(User user)
+	{ 
+		var identityUser = await EnsureValidIdentityUser(user);
+		
+		return await _userManager.GeneratePasswordResetTokenAsync(identityUser);
+	}
+
+	public async Task<AuthenticationOperationResult> ResetPasswordAsync(User user, string token, string newPassword)
+	{
+		var identityUser = await EnsureValidIdentityUser(user);
+		var result = await _userManager.ResetPasswordAsync(identityUser, token, newPassword);
+		
+		return ToOperationResult(result);
+	}
+
 	private async Task<ApplicationUser?> EnsureValidIdentityUser(User user)
 	{
 		if (_identityUser is null || user.Id.Value != _identityUser.Id)

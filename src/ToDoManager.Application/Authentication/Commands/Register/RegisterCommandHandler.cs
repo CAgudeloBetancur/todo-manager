@@ -1,12 +1,9 @@
-﻿using System.Runtime.InteropServices.JavaScript;
-using ErrorOr;
+﻿using ErrorOr;
 using MediatR;
-using ToDoManager.Application.Authentication.Common;
 using ToDoManager.Application.Authentication.Common.Persistence;
 using ToDoManager.Application.Common.Errors;
 using ToDoManager.Application.Common.Interfaces.Authentication;
 using ToDoManager.Domain.Users;
-using ToDoManager.Domain.Users.ValueObjects;
 
 namespace ToDoManager.Application.Authentication.Commands.Register;
 

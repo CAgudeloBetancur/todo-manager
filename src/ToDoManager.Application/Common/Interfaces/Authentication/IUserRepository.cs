@@ -16,4 +16,6 @@ public interface IUserRepository
 	Task<AuthenticationOperationResult> UpdateUserAsync(User user);
 	Task<AuthenticationOperationResult> ChangePasswordAsync(User user, string currentPassword, string newPassword);
 	Task<AuthenticationOperationResult> ChangeEmailAsync(User user, string newEmail);
+	Task<string> GeneratePasswordResetTokenAsync(User user);
+	Task<AuthenticationOperationResult> ResetPasswordAsync(User user, string token, string newPassword);
 }
