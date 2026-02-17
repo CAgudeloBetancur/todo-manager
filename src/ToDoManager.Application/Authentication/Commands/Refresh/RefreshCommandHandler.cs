@@ -1,7 +1,6 @@
 ﻿using ErrorOr;
 using MediatR;
 using ToDoManager.Application.Authentication.Common;
-using ToDoManager.Application.Common.Behaviors;
 using ToDoManager.Application.Common.Errors;
 using ToDoManager.Application.Common.Interfaces.Authentication;
 using ToDoManager.Application.Common.Interfaces.Http;

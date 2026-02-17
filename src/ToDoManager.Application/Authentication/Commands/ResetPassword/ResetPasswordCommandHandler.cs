@@ -1,18 +1,16 @@
 ﻿using ErrorOr;
 using MediatR;
-using ToDoManager.Application.Authentication.Common;
 using ToDoManager.Application.Authentication.Common.Persistence;
 using ToDoManager.Application.Common.Errors;
 using ToDoManager.Application.Common.Interfaces.Authentication;
 using ToDoManager.Application.Common.Interfaces.Persistence;
 using ToDoManager.Application.Common.Interfaces.Persistence.DTOs;
 using ToDoManager.Application.Common.Interfaces.Services;
-using ToDoManager.Domain.Users;
 using ToDoManager.Domain.Users.ValueObjects;
 
 namespace ToDoManager.Application.Authentication.Commands.ResetPassword;
 
-public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, ErrorOr<AuthenticationResult>>
+public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, ErrorOr<Unit>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IRefreshTokenRepository _refreshTokenRepository;
@@ -32,7 +30,7 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
         _dateTimeProvider = dateTimeProvider;
     }
 
-    public async Task<ErrorOr<AuthenticationResult>> Handle(
+    public async Task<ErrorOr<Unit>> Handle(
         ResetPasswordCommand request,
         CancellationToken cancellationToken
         )
@@ -52,25 +50,8 @@ public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand,
         
         var existingTokens = await _refreshTokenRepository.GetByUserIdAsync(user.Id.Value);
         _refreshTokenRepository.InvalidateAsync(existingTokens);
-        
-        var userRoles = await _userRepository.GetRolesAsync(user);
-        var jwt = _jwtTokenGenerator.GenerateToken(user, userRoles);
-        
-        var refreshTokenDto = CreateRefreshTokenDto(user.Id);
 
-        await _refreshTokenRepository.AddAsync(refreshTokenDto);
-
-        return new AuthenticationResult(jwt, refreshTokenDto.Token);
-    }
-
-    private RefreshTokenDto CreateRefreshTokenDto(UserId userId)
-    {
-        return new RefreshTokenDto(
-            Guid.NewGuid().ToString("N"),
-            userId.Value,
-            _dateTimeProvider.UtcNow.AddDays(7),
-            false
-        );
+        return Unit.Value;
     }
 
     private static List<Error> MapToValidationErrors(IEnumerable<AuthenticationError> errors)

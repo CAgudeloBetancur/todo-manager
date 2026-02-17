@@ -8,6 +8,7 @@ using ToDoManager.Application.Common.Interfaces.Authentication;
 using ToDoManager.Application.Common.Interfaces.Http;
 using ToDoManager.Domain.Users;
 using ToDoManager.Domain.Users.ValueObjects;
+using Unit = MediatR.Unit;
 
 namespace ToDoManager.Application.Authentication.Commands.UpdateUser;
 

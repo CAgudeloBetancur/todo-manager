@@ -6,8 +6,7 @@ using ToDoManager.Application.Common.Interfaces.Authentication;
 using ToDoManager.Application.Common.Interfaces.Persistence;
 using ToDoManager.Application.Common.Interfaces.Persistence.DTOs;
 using ToDoManager.Application.Common.Interfaces.Services;
-using ToDoManager.Domain.Users;
-using ToDoManager.Domain.Users.ValueObjects;
+
 
 namespace ToDoManager.Application.Authentication.Queries.Login;
 
