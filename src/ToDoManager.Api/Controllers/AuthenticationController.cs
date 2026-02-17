@@ -148,7 +148,7 @@ public class AuthenticationController : ApiController
 			);
 
 		return result.Match(
-			authResult => Ok(authResult),
+			_ => NoContent(),
 			errors => Problem(errors));
 	}
 }
